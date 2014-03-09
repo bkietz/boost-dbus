@@ -86,7 +86,7 @@ public:
    */
   template <typename Duration>
   message send(message& m,
-	  const Duration& timeout = timeout_default())
+      const Duration& timeout = timeout_default())
   {
     return this->get_service().send(
       this->get_implementation(),
@@ -129,29 +129,29 @@ public:
     connection& connection_;
     std::string expression_;
 
-	match(connection& c, 
-	    BOOST_ASIO_MOVE_ARG(std::string) e)
+    match(connection& c, 
+        BOOST_ASIO_MOVE_ARG(std::string) e)
       : connection_(c),
-	    expression_(BOOST_ASIO_MOVE_CAST(e))
+        expression_(BOOST_ASIO_MOVE_CAST(e))
     {
-	  // dbus_bus_add_match
+      // dbus_bus_add_match
     }
 
-	match() {}
+    match() {}
 
   public:
-	friend class connection;
+    friend class connection;
 
     ~match()
-	{
+    {
       // dbus_bus_remove_match
-	}
+    }
 
   };
 
   /// Create a new match.
   match new_match(
-	  BOOST_ASIO_MOVE_ARG(string) expression)
+      BOOST_ASIO_MOVE_ARG(string) expression)
   {
     return this->get_service().new_match(
       this->get_implementation(),
@@ -164,28 +164,29 @@ public:
    */
   class filter
   {
-	connection& connection_;
-	function<bool(message)> predicate_;
-	detail::queue<message> queue_;
+    connection& connection_;
+    function<bool(message)> predicate_;
+    detail::queue<message> queue_;
 
     template<typename MessagePredicate>
     filter(connection& c,
         BOOST_ASIO_MOVE_ARG(MessagePredicate) p)
       : connection_(c),
-		predicate_(BOOST_ASIO_MOVE_CAST(MessagePredicate)(p))
+        predicate_(BOOST_ASIO_MOVE_CAST(MessagePredicate)(p))
     {
-	  // dbus_connection_add_filter
+      // dbus_connection_add_filter
     }
 
-	filter() {}
+    filter() {}
 
   public:
-	friend class connection;
+    friend class connection;
 
-	~filter()
-	{
-	  // dbus_connection_remove_filter
-	}
+
+    ~filter()
+    {
+      // dbus_connection_remove_filter
+    }
 
     template<typename MessageHandler>
     inline BOOST_ASIO_INITFN_RESULT_TYPE(MessageHandler,
@@ -193,16 +194,16 @@ public:
     async_dispatch(
         BOOST_ASIO_MOVE_ARG(MessageHandler) handler)
     {
-	  return queue_.async_pop(
-		BOOST_ASIO_MOVE_CAST(MessageHandler)(handler));
-	}
+      return queue_.async_pop(
+        BOOST_ASIO_MOVE_CAST(MessageHandler)(handler));
+    }
 
   };
 
   /// Create a new filter.
   template<typename MessagePredicate>
   filter new_filter(
-	  BOOST_ASIO_MOVE_ARG(MessagePredicate) p)
+      BOOST_ASIO_MOVE_ARG(MessagePredicate) p)
   {
     return this->get_service().new_match(
       this->get_implementation(),
