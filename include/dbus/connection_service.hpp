@@ -1,8 +1,17 @@
-#include <dbus/detail/watch_timeout.hpp>
-#include <dbus/detail/queue.hpp>
+#ifndef DBUS_CONNECTION_SERVICE_HPP
+#define DBUS_CONNECTION_SERVICE_HPP
+
+#include <string>
 #include <boost/asio.hpp>
 
+#include <dbus/message.hpp>
+#include <dbus/detail/watch_timeout.hpp>
+#include <dbus/detail/queue.hpp>
+
 namespace dbus {
+
+using std::string;
+using namespace boost::asio;
 
 class connection_service
   : public io_service::service
@@ -57,7 +66,7 @@ public:
   }
 
   void open(implementation_type& impl,
-	  const unsigned bus_type = DBUS_BUS_SYSTEM,
+	  const unsigned bus_type = (unsigned) DBUS_BUS_SYSTEM,
 	  bool shared=true)
   {
 	io_service& io = this->get_io_service();
@@ -66,7 +75,7 @@ public:
 	
     DBusError error;
     dbus_error_init(&error);
-	impl = dbus_bus_get(bus_type, &error);
+	impl = dbus_bus_get((DBusBusType)bus_type, &error);
 	//TODO actually deal with that error
 
     dbus_connection_set_watch_functions(impl,
@@ -119,3 +128,5 @@ public:
 io_service::id connection_service::id;
 
 } // namespace dbus
+
+#endif // DBUS_CONNECTION_SERVICE_HPP

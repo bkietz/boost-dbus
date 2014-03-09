@@ -1,3 +1,7 @@
+#ifndef DBUS_MATCH_HPP
+#ifndef DBUS_FILTER_HPP
+
+#include <string>
 #include <boost/asio.hpp>
 
 namespace dbus {
@@ -38,3 +42,5 @@ public:
 };
 
 } // namespace dbus
+
+#endif // DBUS_FILTER_HPP

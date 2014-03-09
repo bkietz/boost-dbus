@@ -1,3 +1,6 @@
+#ifndef DBUS_FILTER_HPP
+#define DBUS_FILTER_HPP
+
 #include <dbus/detail/queue.hpp>
 #include <boost/asio.hpp>
 
@@ -47,3 +50,6 @@ public:
 };
 
 } // namespace dbus
+
+
+#endif // DBUS_FILTER_HPP
