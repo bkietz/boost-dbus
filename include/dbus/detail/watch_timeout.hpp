@@ -1,37 +1,45 @@
-#include <chrono>
+#ifndef DBUS_WATCH_TIMEOUT_HPP
+#define DBUS_WATCH_TIMEOUT_HPP
 
 #include <dbus/dbus.h>
 #include <boost/asio/generic/stream_protocol.hpp>
 #include <boost/asio/steady_timer.hpp>
 
+#include <dbus/chrono.hpp>
+
 namespace dbus {
 namespace detail {
 
+using boost::asio::io_service;
+using boost::asio::steady_timer;
+using boost::asio::generic::stream_protocol;
+using boost::asio::null_buffers;
+
 static void watch_toggled(DBusWatch *dbus_watch, void *data);
-struct watch_handler {
+struct watch_handler
+{
   DBusWatchFlags flags;
   DBusWatch* dbus_watch;
   watch_handler(DBusWatchFlags f, DBusWatch* w):
     flags(f), dbus_watch(w) {}
   
-  void operator()(boost::system::error_code ec, size_t) {
+  void operator()(boost::system::error_code ec, size_t)
+  {
     if(ec) return;
     dbus_watch_handle(dbus_watch, flags);
 
-    using boost::asio::generic::stream_protocol;
     stream_protocol::socket& socket = 
       *static_cast<stream_protocol::socket *>(dbus_watch_get_data(dbus_watch));
 
     watch_toggled(dbus_watch, &socket.get_io_service());
   }
 };
-static void watch_toggled(DBusWatch *dbus_watch, void *data) {
-  using boost::asio::generic::stream_protocol;
+static void watch_toggled(DBusWatch *dbus_watch, void *data)
+{
   stream_protocol::socket& socket = 
     *static_cast<stream_protocol::socket *>(dbus_watch_get_data(dbus_watch));
 
   if(dbus_watch_get_enabled(dbus_watch)) {
-    using boost::asio::null_buffers;
 
     if(dbus_watch_get_flags(dbus_watch) & DBUS_WATCH_READABLE)
       socket.async_read_some(null_buffers(),
@@ -40,17 +48,18 @@ static void watch_toggled(DBusWatch *dbus_watch, void *data) {
     if(dbus_watch_get_flags(dbus_watch) & DBUS_WATCH_WRITABLE)
       socket.async_write_some(null_buffers(), 
         watch_handler(DBUS_WATCH_WRITABLE, dbus_watch));
+
   } else {
     socket.cancel();
   }
 }
-static dbus_bool_t add_watch(DBusWatch *dbus_watch, void *data) {
+
+static dbus_bool_t add_watch(DBusWatch *dbus_watch, void *data)
+{
   if(!dbus_watch_get_enabled(dbus_watch)) return TRUE;
 
-  using boost::asio::io_service;
   io_service& io = *static_cast<io_service *>(data);
 
-  using boost::asio::generic::stream_protocol;
   int fd = dbus_watch_get_unix_fd(dbus_watch);
   stream_protocol::socket& socket =
     *new stream_protocol::socket(io);
@@ -62,32 +71,35 @@ static dbus_bool_t add_watch(DBusWatch *dbus_watch, void *data) {
   watch_toggled(dbus_watch, &io);
   return TRUE;
 }
-static void remove_watch(DBusWatch *dbus_watch, void *data) {
-  using boost::asio::generic::stream_protocol;
+
+static void remove_watch(DBusWatch *dbus_watch, void *data)
+{
   delete static_cast<stream_protocol::socket *>(dbus_watch_get_data(dbus_watch));
 }
 
 
 
 
-struct timeout_handler {
+struct timeout_handler
+{
   DBusTimeout* dbus_timeout;
   timeout_handler(DBusTimeout* t):
     dbus_timeout(t) {}
   
-  void operator()(boost::system::error_code ec) {
+  void operator()(boost::system::error_code ec)
+  {
     if(ec) return;
     dbus_timeout_handle(dbus_timeout);
   }
 };
-static void timeout_toggled(DBusTimeout *dbus_timeout, void *data) {
-  using boost::asio::steady_timer;
+
+static void timeout_toggled(DBusTimeout *dbus_timeout, void *data)
+{
   steady_timer& timer = 
     *static_cast<steady_timer *>(dbus_timeout_get_data(dbus_timeout));
 
   if(dbus_timeout_get_enabled(dbus_timeout)) {
-    using namespace std::chrono;
-    steady_timer::duration interval = milliseconds(dbus_timeout_get_interval(dbus_timeout));
+    steady_timer::duration interval = chrono::milliseconds(dbus_timeout_get_interval(dbus_timeout));
     timer.expires_from_now(interval);
     timer.cancel();
     timer.async_wait(timeout_handler(dbus_timeout));
@@ -95,13 +107,13 @@ static void timeout_toggled(DBusTimeout *dbus_timeout, void *data) {
     timer.cancel();
   }
 }
-static dbus_bool_t add_timeout(DBusTimeout *dbus_timeout, void *data) {
+
+static dbus_bool_t add_timeout(DBusTimeout *dbus_timeout, void *data)
+{
   if(!dbus_timeout_get_enabled(dbus_timeout)) return TRUE;
 
-  using boost::asio::io_service;
   io_service& io = *static_cast<io_service *>(data);
 
-  using boost::asio::steady_timer;
   steady_timer& timer = 
     *new steady_timer(io);
 
@@ -110,13 +122,15 @@ static dbus_bool_t add_timeout(DBusTimeout *dbus_timeout, void *data) {
   timeout_toggled(dbus_timeout, &io);
   return TRUE;
 }
-static void remove_timeout(DBusTimeout *dbus_timeout, void *data) {
-  using boost::asio::steady_timer;
+
+static void remove_timeout(DBusTimeout *dbus_timeout, void *data)
+{
   delete static_cast<steady_timer *>(dbus_timeout_get_data(dbus_timeout));
 }
 
 
-struct dispatch_handler {
+struct dispatch_handler
+{
   boost::asio::io_service& io;
   DBusConnection *conn;
   dispatch_handler(boost::asio::io_service& i, DBusConnection *c): io(i), conn(c) {}
@@ -125,8 +139,9 @@ struct dispatch_handler {
       io.post(dispatch_handler(io, conn));
   }
 };
-static void dispatch_status(DBusConnection *conn, DBusDispatchStatus new_status, void *data) {
-  using boost::asio::io_service;
+
+static void dispatch_status(DBusConnection *conn, DBusDispatchStatus new_status, void *data)
+{
   io_service& io = *static_cast<io_service *>(data);
   if(new_status == DBUS_DISPATCH_DATA_REMAINS)
     io.post(dispatch_handler(io, conn));
@@ -134,3 +149,5 @@ static void dispatch_status(DBusConnection *conn, DBusDispatchStatus new_status,
 
 } // namespace detail
 } // namespace dbus
+
+#endif // DBUS_WATCH_TIMEOUT_HPP

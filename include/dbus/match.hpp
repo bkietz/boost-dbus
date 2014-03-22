@@ -27,6 +27,8 @@ class match
       expression_(BOOST_ASIO_MOVE_CAST(e))
   {
     // dbus_bus_add_match
+    // eventually, for complete asynchronicity, this should connect to
+    // org.freedesktop.DBus and call org.freedesktop.DBus.AddMatch
   }
 
   match() {}

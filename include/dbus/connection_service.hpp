@@ -93,21 +93,21 @@ public:
 
   template <typename Duration>
   message send(implementation_type& impl,
-	  message& m,
+      message& m,
       const Duration& timeout)
   {
-	//TODO generically convert timeout to milliseconds
-	if(timeout == 0) {
-	  //TODO this can return false if it failed
-	  dbus_connection_send(impl, m, &m.serial);
-	  return message();
-	} else {
-	  DBusError error;
-	  dbus_error_init(&error);
-	  return dbus_connection_send_with_reply_and_block(impl, 
-		m, timeout, &error);
-	  //TODO deal with that error
-	}
+    //TODO generically convert timeout to milliseconds
+    if(timeout == 0) {
+      //TODO this can return false if it failed
+      dbus_connection_send(impl, m, &m.serial);
+      return message();
+    } else {
+      DBusError error;
+      dbus_error_init(&error);
+      return message(dbus_connection_send_with_reply_and_block(impl, 
+          m, timeout, &error));
+          //TODO deal with that error
+    }
   }
 
   template<typename MessageHandler>

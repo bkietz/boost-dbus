@@ -5,7 +5,7 @@
 #include <boost/asio.hpp>
 //#include <dbus/match.hpp>
 //#include <dbus/filter.hpp>
-#include <dbus/time.hpp>
+#include <dbus/chrono.hpp>
 #include <dbus/message.hpp>
 #include <dbus/connection_service.hpp>
 
@@ -78,6 +78,22 @@ public:
   }
 
   //TODO add error_code catchers to all these
+  /// Send a message.
+  /**
+   * @param m The message to send.
+   *
+   * @return The reply received.
+   *
+   * @throws boost::system::system_error When the response timed out or
+   * there was some other error.
+   */
+  message send(message& m)
+  {
+    return this->get_service().send(
+      this->get_implementation(),
+      m,
+      timeout_default());
+  }
 
   /// Send a message.
   /**
@@ -88,12 +104,12 @@ public:
    *
    * @return The reply received.
    *
-   * @throws boost::system::system_error When the response timed out, if
-   * timeout was not 0.
+   * @throws boost::system::system_error When the response timed out (if
+   * timeout was not 0), or there was some other error.
    */
   template <typename Duration>
   message send(message& m,
-      const Duration& t = timeout_default())
+      const Duration& t)
   {
     return this->get_service().send(
       this->get_implementation(),
