@@ -1,5 +1,5 @@
 #ifndef DBUS_MATCH_HPP
-#ifndef DBUS_FILTER_HPP
+#define DBUS_MATCH_HPP
 
 #include <string>
 #include <boost/asio.hpp>
@@ -7,6 +7,8 @@
 namespace dbus {
 
 class connection;
+
+void delete_match(connection&, std::string);
 
 /// Simple placeholder object for a match rule.
 /**
@@ -24,25 +26,17 @@ class match
   match(connection& c, 
       BOOST_ASIO_MOVE_ARG(std::string) e)
     : connection_(c),
-      expression_(BOOST_ASIO_MOVE_CAST(e))
-  {
-    // dbus_bus_add_match
-    // eventually, for complete asynchronicity, this should connect to
-    // org.freedesktop.DBus and call org.freedesktop.DBus.AddMatch
-  }
-
-  match() {}
+      expression_(BOOST_ASIO_MOVE_CAST(std::string)(e))
+  {}
 
 public:
   friend class connection;
 
-  ~match()
-  {
-    // dbus_bus_remove_match
-  }
-
+  const std::string& get_expression() const { return expression_; }
+  connection& get_connection() { return connection_; }
+  ~match();
 };
 
 } // namespace dbus
 
-#endif // DBUS_FILTER_HPP
+#endif // DBUS_MATCH_HPP

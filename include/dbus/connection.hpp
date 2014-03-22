@@ -3,8 +3,8 @@
 
 #include <string>
 #include <boost/asio.hpp>
-//#include <dbus/match.hpp>
-//#include <dbus/filter.hpp>
+#include <dbus/match.hpp>
+#include <dbus/filter.hpp>
 #include <dbus/chrono.hpp>
 #include <dbus/message.hpp>
 #include <dbus/connection_service.hpp>
@@ -23,22 +23,10 @@ class connection
 {
 public:
 
-  /// Constructor.
+  /// Open a connection to a specified address.
   /**
    * @param io_service The io_service object that the connection will use to
    * wire D-Bus for asynchronous operation.
-   */
-  explicit connection(io_service& io)
-    : basic_io_object<connection_service>(io)
-  {
-  }
-
-  //TODO: should these be constructors...?
-
-  /// Open a connection to a specified address.
-  /**
-   * @note This function or open(unsigned) should be called only once to initialize
-   * a connection.
    *
    * @param address The address of the bus to connect to.
    *
@@ -46,7 +34,8 @@ public:
    *
    * @throws boost::system::system_error When opening the connection failed.
    */
-  void open(const string& address, bool shared=true)
+  connection(io_service& io, const string& address, bool shared=true)
+    : basic_io_object<connection_service>(io)
   {
     this->get_service().open(
       this->get_implementation(),
@@ -59,21 +48,19 @@ public:
    * D-Bus connections are usually opened to well-known buses like the
    * system or session bus.
    *
-   * @note This function or open(string) should be called only once to initialize
-   * a connection.
-   *
-   * @param bus_type The well-known bus to connect to.
+   * @param bus The well-known bus to connect to.
    *
    * @param shared Set false to open a private connection.
    *
    * @throws boost::system::system_error When opening the connection failed.
    */
   // TODO: change this unsigned to an enumeration 
-  void open(const unsigned bus_type, bool shared=true)
+  connection(io_service& io, const int bus, bool shared=true)
+    : basic_io_object<connection_service>(io)
   {
     this->get_service().open(
       this->get_implementation(),
-      bus_type,
+      bus,
       shared);
   }
 
@@ -91,8 +78,7 @@ public:
   {
     return this->get_service().send(
       this->get_implementation(),
-      m,
-      timeout_default());
+      m);
   }
 
   /// Send a message.
@@ -137,13 +123,26 @@ public:
       BOOST_ASIO_MOVE_CAST(MessageHandler)(handler));
   }
 
-  /*
-
   /// Create a new match.
   match new_match(
       BOOST_ASIO_MOVE_ARG(string) expression)
   {
-    return match(BOOST_ASIO_MOVE_CAST(string)(expression));
+    match m(*this,
+        BOOST_ASIO_MOVE_CAST(string)(expression));
+
+    this->get_service().new_match(
+	this->get_implementation(),
+        m);
+
+    return m;
+  }
+
+  /// Destroy a match.
+  void delete_match(match& m)
+  {
+    this->get_service().delete_match(
+	this->get_implementation(),
+        m);
   }
 
   /// Create a new filter.
@@ -151,12 +150,38 @@ public:
   filter new_filter(
       BOOST_ASIO_MOVE_ARG(MessagePredicate) p)
   {
-    return filter(BOOST_ASIO_MOVE_CAST(MessagePredicate)(p));
+    filter f(this->get_io_service(),
+	BOOST_ASIO_MOVE_CAST(MessagePredicate)(p));
+
+    this->get_service().new_filter(
+	this->get_implementation(),
+	f);
+
+    return f;
   }
 
-  */
+  void delete_filter(filter& f)
+  {
+    this->get_service().delete_filter(
+	this->get_implementation(),
+	f);
+  }
 
 };
+
+
+// These need to be here so that connection is a complete 
+// type whose member delete_match can be called
+match::~match()
+{
+  this->get_connection().delete_match(*this);
+}
+
+filter::~filter()
+{
+  this->get_connection().delete_filter(*this);
+}
+
 
 } // namespace dbus
 

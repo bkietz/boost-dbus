@@ -13,13 +13,4 @@ namespace chrono = boost::chrono;
 }
 #endif
 
-namespace dbus {
-
-int timeout_default()
-{
-  return -1;
-}
-
-} // dbus
-
 #endif // DBUS_CHRONO_HPP

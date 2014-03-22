@@ -147,6 +147,21 @@ static void dispatch_status(DBusConnection *conn, DBusDispatchStatus new_status,
     io.post(dispatch_handler(io, conn));
 }
 
+static void set_watch_timeout_dispatch_functions(DBusConnection *conn, boost::asio::io_service& io)
+{
+    dbus_connection_set_watch_functions(conn,
+      &add_watch, &remove_watch, &watch_toggled, &io, NULL);
+
+    dbus_connection_set_timeout_functions(conn,
+      &add_timeout, &remove_timeout, &timeout_toggled, &io, NULL);
+
+    dbus_connection_set_dispatch_status_function(conn,
+      &dispatch_status, &io, NULL);
+
+    dispatch_status(conn,
+      dbus_connection_get_dispatch_status(conn), &io);
+}
+
 } // namespace detail
 } // namespace dbus
 
