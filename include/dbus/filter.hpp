@@ -1,7 +1,9 @@
 #ifndef DBUS_FILTER_HPP
 #define DBUS_FILTER_HPP
 
+#include <functional>
 #include <dbus/detail/queue.hpp>
+#include <dbus/message.hpp>
 #include <boost/asio.hpp>
 
 namespace dbus {
@@ -15,7 +17,7 @@ class connection;
 class filter
 {
   connection& connection_;
-  function<bool(message)> predicate_;
+  std::function<bool(message)> predicate_;
   detail::queue<message> queue_;
 
   template<typename MessagePredicate>
@@ -23,19 +25,25 @@ class filter
       BOOST_ASIO_MOVE_ARG(MessagePredicate) p)
     : connection_(c),
       predicate_(BOOST_ASIO_MOVE_CAST(MessagePredicate)(p))
-  {
-    // dbus_connection_add_filter
-  }
-
-  filter() {}
+  {}
 
 public:
   friend class connection;
 
-  ~filter()
-  {
-    // dbus_connection_remove_filter
+  filter(const filter& f)
+    : connection_(f.connection_),
+      predicate_(f.predicate_),
+      queue_(f.queue_)
+  {}
+
+  bool offer(message m)
+  { 
+      bool passed = predicate_(m);
+      queue_.push(m);
+      return passed; 
   }
+  connection& get_connection() { return connection_; }
+  ~filter();
 
   template<typename MessageHandler>
   inline BOOST_ASIO_INITFN_RESULT_TYPE(MessageHandler,

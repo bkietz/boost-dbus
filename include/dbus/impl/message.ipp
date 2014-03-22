@@ -20,7 +20,7 @@ template<typename Element>
 message::packer message::pack(Element& e)
 {
   message::packer p;
-  dbus_message_iter_init(*this, &p.iter_);
+  dbus_message_iter_init_append(*this, &p.iter_);
   p.pack(e);
   return p;
 }

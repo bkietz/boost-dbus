@@ -31,6 +31,16 @@ public:
 
   message() {}
 
+  message(const message& m)
+    : message_(dbus_message_ref(m.message_))
+  {
+  }
+
+  ~message()
+  {
+    dbus_message_unref(message_);
+  }
+
   /// Wrap an existing DBusMessage *
   explicit message(DBusMessage *m)
     : message_(m)
