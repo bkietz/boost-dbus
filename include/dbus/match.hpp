@@ -3,12 +3,9 @@
 
 #include <string>
 #include <boost/asio.hpp>
+#include <dbus/connection.hpp>
 
 namespace dbus {
-
-class connection;
-
-void delete_match(connection&, std::string);
 
 /// Simple placeholder object for a match rule.
 /**
@@ -23,19 +20,43 @@ class match
   connection& connection_;
   std::string expression_;
 
+public:
   match(connection& c, 
       BOOST_ASIO_MOVE_ARG(std::string) e)
     : connection_(c),
       expression_(BOOST_ASIO_MOVE_CAST(std::string)(e))
-  {}
+  {
+	connection_.new_match(*this);
+  }
 
-public:
-  friend class connection;
+  ~match()
+  {
+	connection_.delete_match(*this);
+  }
 
   const std::string& get_expression() const { return expression_; }
-  connection& get_connection() { return connection_; }
-  ~match();
 };
+
+//TODO move this to dbus::impl stat
+void connection_service::new_match(implementation_type& impl,
+    match& m)
+{
+  DBusError err;
+  dbus_error_init(&err);
+  dbus_bus_add_match(impl, m.get_expression().c_str(), &err);
+  //TODO deal with that error
+  // eventually, for complete asynchronicity, this should connect to
+  // org.freedesktop.DBus and call org.freedesktop.DBus.AddMatch
+}
+
+void connection_service::delete_match(implementation_type& impl,
+    match& m)
+{
+  DBusError err;
+  dbus_error_init(&err);
+  dbus_bus_remove_match(impl, m.get_expression().c_str(), &err);
+  //TODO deal with that error
+}
 
 } // namespace dbus
 

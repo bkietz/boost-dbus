@@ -2,15 +2,14 @@
 #define DBUS_QUEUE_HPP
 
 #include <deque>
-#include <functional>
 #include <boost/asio.hpp>
 #include <boost/asio/detail/mutex.hpp>
+
+#include <dbus/functional.hpp>
 
 
 namespace dbus {
 namespace detail {
-
-using std::function;
 
 template<typename Message>
 class queue

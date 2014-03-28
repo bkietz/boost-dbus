@@ -1,5 +1,7 @@
 #include <dbus/connection.hpp>
 #include <dbus/message.hpp>
+#include <dbus/filter.hpp>
+#include <dbus/match.hpp>
 #include <iostream>
 
 //TODO: use an actual test suite
@@ -42,13 +44,11 @@ int main()
 
   cout << browser_path << endl;
 
-  dbus::match match = system_bus.new_match(
-      "type='signal',path='" + browser_path + "'"
-      );
+  dbus::match ma(system_bus, "type='signal',path='" + browser_path + "'");
 
-  dbus::filter f = system_bus.new_filter([](dbus::message m){ return true; });
+  dbus::filter f(system_bus, [](dbus::message m){ return true; });
 
-  f.async_pop([](boost::system::error_code ec, dbus::message m){
+  f.async_dispatch([](boost::system::error_code ec, dbus::message m){
     dbus::int32 i;
     m.unpack(i);
     cout << i << endl;

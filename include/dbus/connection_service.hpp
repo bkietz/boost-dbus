@@ -7,7 +7,6 @@
 #include <dbus/message.hpp>
 #include <dbus/detail/watch_timeout.hpp>
 #include <dbus/detail/queue.hpp>
-#include <dbus/match.hpp>
 
 namespace dbus {
 
@@ -19,6 +18,9 @@ namespace bus {
 
 using std::string;
 using namespace boost::asio;
+
+class filter;
+class match;
 
 class connection_service
   : public io_service::service
@@ -131,56 +133,22 @@ public:
   }
 
   void new_match(implementation_type& impl,
-      match& m)
-  {
-    DBusError err;
-    dbus_error_init(&err);
-    dbus_bus_add_match(impl, m.get_expression().c_str(), &err);
-    //TODO deal with that error
-    // eventually, for complete asynchronicity, this should connect to
-    // org.freedesktop.DBus and call org.freedesktop.DBus.AddMatch
-  }
+      match& m);
 
   void delete_match(implementation_type& impl,
-      match& m)
-  {
-    DBusError err;
-    dbus_error_init(&err);
-    dbus_bus_remove_match(impl, m.get_expression().c_str(), &err);
-  }
+      match& m);
   
-  static DBusHandlerResult filter_wrap(
+  static DBusHandlerResult filter_callback(
       DBusConnection *c,
       DBusMessage *m,
-      void *userdata)
-  {
-    try
-    {
-      filter& f = *static_cast<filter *>(userdata);
-      if(f.offer(message(m)))
-      {
-        return DBUS_HANDLER_RESULT_HANDLED;
-      }
-    } catch(...) {
-      // do not throw in C callbacks. Just don't.
-    }
-
-    return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-  }
+      void *userdata);
 
   void new_filter(implementation_type& impl,
-      filter& f)
-  {
-    dbus_connection_add_filter(impl,
-        &filter_wrap, &f, NULL);
-  }
+      filter& f);
   
   void delete_filter(implementation_type& impl,
-      filter& f)
-  {
-    dbus_connection_remove_filter(impl,
-        &filter_wrap, &f);
-  }
+      filter& f);
+
 };
 
 io_service::id connection_service::id;

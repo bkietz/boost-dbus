@@ -3,8 +3,6 @@
 
 #include <string>
 #include <boost/asio.hpp>
-#include <dbus/match.hpp>
-#include <dbus/filter.hpp>
 #include <dbus/chrono.hpp>
 #include <dbus/message.hpp>
 #include <dbus/connection_service.hpp>
@@ -13,6 +11,9 @@ namespace dbus {
 
 using std::string;
 using namespace boost::asio;
+
+class filter;
+class match;
 
 /// Root D-Bus IO object
 /**
@@ -124,17 +125,11 @@ public:
   }
 
   /// Create a new match.
-  match new_match(
-      BOOST_ASIO_MOVE_ARG(string) expression)
+  void new_match(match &m)
   {
-    match m(*this,
-        BOOST_ASIO_MOVE_CAST(string)(expression));
-
     this->get_service().new_match(
 	this->get_implementation(),
         m);
-
-    return m;
   }
 
   /// Destroy a match.
@@ -146,20 +141,14 @@ public:
   }
 
   /// Create a new filter.
-  template<typename MessagePredicate>
-  filter new_filter(
-      BOOST_ASIO_MOVE_ARG(MessagePredicate) p)
+  void new_filter(filter& f)
   {
-    filter f(this->get_io_service(),
-	BOOST_ASIO_MOVE_CAST(MessagePredicate)(p));
-
     this->get_service().new_filter(
 	this->get_implementation(),
 	f);
-
-    return f;
   }
 
+  /// Destroy a filter.
   void delete_filter(filter& f)
   {
     this->get_service().delete_filter(
@@ -168,19 +157,6 @@ public:
   }
 
 };
-
-
-// These need to be here so that connection is a complete 
-// type whose member delete_match can be called
-match::~match()
-{
-  this->get_connection().delete_match(*this);
-}
-
-filter::~filter()
-{
-  this->get_connection().delete_filter(*this);
-}
 
 
 } // namespace dbus
