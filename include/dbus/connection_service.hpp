@@ -4,6 +4,7 @@
 #include <string>
 #include <boost/asio.hpp>
 
+#include <dbus/error.hpp>
 #include <dbus/message.hpp>
 #include <dbus/detail/watch_timeout.hpp>
 #include <dbus/detail/queue.hpp>
@@ -54,11 +55,10 @@ public:
   {
     io_service& io = this->get_io_service();
 
-    DBusError error;
-    dbus_error_init(&error);
-    impl = dbus_connection_open(address.c_str(), &error);
-    //TODO actually deal with that error
+    error e;
+    impl = dbus_connection_open(address.c_str(), e);
 
+    e.throw_if_set();
     detail::set_watch_timeout_dispatch_functions(impl, io);
   }
 
@@ -68,22 +68,22 @@ public:
   {
     io_service& io = this->get_io_service();
 
-    DBusError error;
-    dbus_error_init(&error);
-    impl = dbus_bus_get((DBusBusType)bus, &error);
-    //TODO actually deal with that error
+    error e;
+    impl = dbus_bus_get((DBusBusType)bus, e);
 
+    e.throw_if_set();
     detail::set_watch_timeout_dispatch_functions(impl, io);
   }
 
   message send(implementation_type& impl,
       message& m)
   {
-    DBusError error;
-    dbus_error_init(&error);
-    return message(dbus_connection_send_with_reply_and_block(impl, 
-        m, -1, &error));
-        //TODO deal with that error
+    error e;
+    message reply(dbus_connection_send_with_reply_and_block(impl, 
+        m, -1, e));
+
+    e.throw_if_set();
+    return reply;
   }
 
   template <typename Duration>
@@ -97,11 +97,12 @@ public:
       dbus_connection_send(impl, m, &m.serial);
       return message();
     } else {
-      DBusError error;
-      dbus_error_init(&error);
-      return message(dbus_connection_send_with_reply_and_block(impl, 
-          m, chrono::milliseconds(timeout).count(), &error));
-          //TODO deal with that error
+      error e;
+      message reply(dbus_connection_send_with_reply_and_block(impl, 
+          m, chrono::milliseconds(timeout).count(), e));
+
+      e.throw_if_set();
+      return reply;
     }
   }
 
