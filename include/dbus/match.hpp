@@ -3,6 +3,8 @@
 
 #include <string>
 #include <boost/asio.hpp>
+
+#include <dbus/error.hpp>
 #include <dbus/connection.hpp>
 
 namespace dbus {
@@ -26,12 +28,12 @@ public:
     : connection_(c),
       expression_(BOOST_ASIO_MOVE_CAST(std::string)(e))
   {
-	connection_.new_match(*this);
+    connection_.new_match(*this);
   }
 
   ~match()
   {
-	connection_.delete_match(*this);
+    connection_.delete_match(*this);
   }
 
   const std::string& get_expression() const { return expression_; }
@@ -41,21 +43,19 @@ public:
 void connection_service::new_match(implementation_type& impl,
     match& m)
 {
-  DBusError err;
-  dbus_error_init(&err);
-  dbus_bus_add_match(impl, m.get_expression().c_str(), &err);
-  //TODO deal with that error
+  error e;
+  dbus_bus_add_match(impl, m.get_expression().c_str(), e);
+  e.throw_if_set();
   // eventually, for complete asynchronicity, this should connect to
-  // org.freedesktop.DBus and call org.freedesktop.DBus.AddMatch
+  // org.freedesktop.DBus and call AddMatch
 }
 
 void connection_service::delete_match(implementation_type& impl,
     match& m)
 {
-  DBusError err;
-  dbus_error_init(&err);
-  dbus_bus_remove_match(impl, m.get_expression().c_str(), &err);
-  //TODO deal with that error
+  error e;
+  dbus_bus_remove_match(impl, m.get_expression().c_str(), e);
+  e.throw_if_set();
 }
 
 } // namespace dbus

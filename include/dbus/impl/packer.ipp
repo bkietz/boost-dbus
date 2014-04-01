@@ -10,8 +10,6 @@ template<typename Element> struct append_one
   //TODO: throw if invalid Element
   append_one(message::packer& p, const Element& e)
   {
-    using std::cout; using std::endl;
-    cout << dbus::element< Element >::code << endl;
     dbus_message_iter_append_basic(&p.iter_, 
         element<Element>::code, &e);
   }

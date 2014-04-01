@@ -65,7 +65,6 @@ public:
       shared);
   }
 
-  //TODO add error_code catchers to all these
   /// Send a message.
   /**
    * @param m The message to send.
