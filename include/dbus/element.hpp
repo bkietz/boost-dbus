@@ -19,36 +19,34 @@ typedef dbus_uint32_t uint32;
 /**
  * D-Bus Message elements are identified by unique integer type codes.
  */
-template<typename InvalidType = void>
-struct element
+template<typename InvalidType=void> struct element
 {
-  static const int invalid = DBUS_TYPE_INVALID;
-  static const int string  = DBUS_TYPE_STRING;
-  static const int int32   = DBUS_TYPE_INT32;
-  static const int uint32  = DBUS_TYPE_UINT32;
-
-  static const int code    = invalid;
+  static const int code = DBUS_TYPE_INVALID;
 };
 
 template<> struct element< int32 >
 {
-  static const int code = element<>::int32;
+  static const int code = DBUS_TYPE_INT32;
 };
 
 template<> struct element< uint32 >
 {
-  static const int code = element<>::uint32;
+  static const int code = DBUS_TYPE_UINT32;
 };
 
 template<> struct element< string >
 {
-  static const int code = element<>::string;
+  static const int code = DBUS_TYPE_STRING;
 };
 
-/// Convenience overload
+/// Convenience overloads
+template<> struct element< char * >
+{
+  static const int code = DBUS_TYPE_STRING;
+};
 template<> struct element< const char * >
 {
-  static const int code = element<>::string;
+  static const int code = DBUS_TYPE_STRING;
 };
 
 } // namespace dbus

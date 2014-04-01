@@ -32,14 +32,14 @@ int main()
       "org.freedesktop.Avahi.Server",
       "ServiceBrowserNew");
 
-  dbus::int32  if_(-1), proto_(-1);
   dbus::string type_("_http._tcp"), domain_("local");
-  dbus::uint32 flags_(0);
-  dbus::string browser_path;
 
-  m2.pack(if_).pack(proto_).pack(type_).pack(domain_).pack(flags_);
+  m2.pack(-1).pack(-1).pack(type_).pack("local").pack<dbus::uint32>(0);
+
+//  cout << (char)dbus::element< const char * >::code << endl;
 
   r = system_bus.send(m2, dbus::chrono::seconds(1));
+  dbus::string browser_path;
   r.unpack(browser_path);
 
   cout << browser_path << endl;

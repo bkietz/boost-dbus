@@ -8,37 +8,42 @@ namespace impl {
 template<typename Element> struct append_one
 {
   //TODO: throw if invalid Element
-  append_one(message::packer& p, Element& e)
+  append_one(message::packer& p, const Element& e)
   {
-	dbus_message_iter_append_basic(&p.iter_, 
-		element<Element>::code, &e);
+    using std::cout; using std::endl;
+    cout << dbus::element< Element >::code << endl;
+    dbus_message_iter_append_basic(&p.iter_, 
+        element<Element>::code, &e);
   }
 };
 
 template<> struct append_one<string>
 {
-  append_one(message::packer& p, string& e)
+  append_one(message::packer& p, const string& e)
   {
-	const char *c = e.c_str();
-	dbus_message_iter_append_basic(&p.iter_, 
-		element<string>::code, &c);
+    const char *c = e.c_str();
+    dbus_message_iter_append_basic(&p.iter_, 
+        element<string>::code, &c);
   }
 };
 
+/*
 template<> struct append_one<const char *>
 {
   append_one(message::packer& p, const char *e)
   {
-	dbus_message_iter_append_basic(&p.iter_, 
-		element<string>::code, &e);
+    dbus_message_iter_append_basic(&p.iter_, 
+        element<string>::code, &e);
   }
 };
+*/
 
 } // namespace impl
 
 
+#include <iostream>
 template<typename Element>
-message::packer& message::packer::pack(Element& e)
+message::packer& message::packer::pack(const Element& e)
 {
   impl::append_one<Element>(*this, e);
   return *this;

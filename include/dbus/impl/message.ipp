@@ -9,15 +9,17 @@ message message::new_call(
     const string& interface_name,
     const string& method_name)
 {
-  return message(dbus_message_new_method_call(
+  message m;
+  m.message_ = dbus_message_new_method_call(
       process_name.c_str(),
       object_path.c_str(),
       interface_name.c_str(),
-      method_name.c_str()));
+      method_name.c_str());
+  return m;
 }
 
 template<typename Element>
-message::packer message::pack(Element& e)
+message::packer message::pack(const Element& e)
 {
   message::packer p;
   dbus_message_iter_init_append(*this, &p.iter_);

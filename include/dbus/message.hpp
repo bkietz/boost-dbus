@@ -21,18 +21,18 @@ public:
       const string& method_name);
 
   /// Create a method return message 
-  static message new_return(); //TODO
+  static message new_return(); 
 
   /// Create an error message 
-  static message new_error(); //TODO
+  static message new_error();
 
   /// Create a signal message
-  static message new_signal(); //TODO
+  static message new_signal();
 
   message() {}
 
-  message(const message& m)
-    : message_(dbus_message_ref(m.message_))
+  message(DBusMessage *m)
+    : message_(dbus_message_ref(m))
   {
   }
 
@@ -41,13 +41,12 @@ public:
     dbus_message_unref(message_);
   }
 
-  /// Wrap an existing DBusMessage *
-  explicit message(DBusMessage *m)
-    : message_(m)
+  operator DBusMessage *()
   {
+    return message_;
   }
 
-  operator DBusMessage *()
+  operator const DBusMessage *() const
   {
     return message_;
   }
@@ -55,18 +54,20 @@ public:
   struct packer
   {
     DBusMessageIter iter_;
-    template<typename Element> packer& pack(Element&);
-    template<typename Element> packer& pack_array(Element*, size_t);
-    //TODO: add open/close container
+    template<typename Element> packer& pack(const Element&);
+    template<typename Element> packer& pack_array(const Element*, size_t);
   };
   struct unpacker
   {
     DBusMessageIter iter_;
+    /// return type code of the next element in line for unpacking
+    int code();
     template<typename Element> unpacker& unpack(Element&);
-    template<typename Element> unpacker& unpack_array(Element*&, size_t); //?
+    int array_code();
+    template<typename Element> unpacker& unpack_array(Element*&, size_t);
   };
 
-  template<typename Element> packer pack(Element&);
+  template<typename Element> packer pack(const Element&);
   template<typename Element> unpacker unpack(Element&);
 
 };

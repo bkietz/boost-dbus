@@ -36,6 +36,11 @@ message::unpacker& message::unpacker::unpack(Element& e)
   return *this;
 }
 
+int message::unpacker::code()
+{
+  return dbus_message_iter_get_arg_type(&iter_);
+}
+
 
 } // namespace dbus
 
