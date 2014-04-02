@@ -31,6 +31,11 @@ public:
 
   message() {}
 
+  message(const message& m)
+    : message_(dbus_message_ref(m.message_))
+  {
+  }
+
   message(DBusMessage *m)
     : message_(dbus_message_ref(m))
   {
@@ -50,6 +55,27 @@ public:
   {
     return message_;
   }
+
+  string get_path()
+  {
+    return dbus_message_get_path(message_);
+  }
+
+  string get_interface()
+  {
+    return dbus_message_get_interface(message_);
+  }
+
+  string get_member()
+  {
+    return dbus_message_get_member(message_);
+  }
+
+  string get_destination()
+  {
+    return dbus_message_get_destination(message_);
+  }
+
 
   struct packer
   {

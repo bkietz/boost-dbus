@@ -16,18 +16,18 @@ namespace dbus {
 class filter
 {
   connection& connection_;
-  function<bool(message)> predicate_;
+  function<bool(message&)> predicate_;
   detail::queue<message> queue_;
 
 public:
   // friend DBusHandlerResult connection_service::filter_callback(
   //     DBusConnection *, DBusMessage *, void *);
 
-  bool offer(message m)
+  bool offer(message& m)
   { 
-    bool passed = predicate_(m);
-    queue_.push(m);
-    return passed; 
+    bool filtered = predicate_(m);
+    if(filtered) queue_.push(m);
+    return filtered; 
   }
 
   template<typename MessagePredicate>
@@ -68,7 +68,8 @@ DBusHandlerResult connection_service::filter_callback(
   try
   {
     filter& f = *static_cast<filter *>(userdata);
-    if(f.offer(message(m)))
+    message m_(m);
+    if(f.offer(m_))
     {
       return DBUS_HANDLER_RESULT_HANDLED;
     }

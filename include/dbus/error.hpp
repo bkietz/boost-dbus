@@ -1,5 +1,9 @@
+#ifndef DBUS_ERROR_HPP
+#define DBUS_ERROR_HPP
+
 #include <string>
 #include <dbus/dbus.h>
+#include <dbus/message.hpp>
 #include <boost/system/error_code.hpp>
 #include <boost/system/system_error.hpp>
 
@@ -18,10 +22,16 @@ public:
     dbus_error_init(&error_);
   }
 
-  error(DBusError *src_)
+  error(DBusError *src)
   {
     dbus_error_init(&error_);
-    dbus_move_error(src_, &error_);
+    dbus_move_error(src, &error_);
+  }
+
+  error(dbus::message& m)
+  {
+    dbus_error_init(&error_);
+    dbus_set_error_from_message(&error_, m);
   }
 
   ~error()
@@ -42,11 +52,6 @@ public:
   bool is_set() const
   {
     return dbus_error_is_set(&error_);
-  }
-
-  operator bool() const
-  {
-    return is_set();
   }
 
   operator const DBusError *() const
@@ -82,3 +87,5 @@ void error::throw_if_set()
 }
 
 } // namespace dbus
+
+#endif // DBUS_ERROR_HPP
