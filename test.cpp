@@ -20,10 +20,12 @@ int main()
 
   dbus::string hostname;
   {
-  dbus::message r;
-  r = system_bus.send(m);
-  r.unpack(hostname);
-  cout << hostname << endl;
+  using dbus::message;
+  using boost::system::error_code;
+  system_bus.async_send(m,[&](error_code ec, message r){  
+      r.unpack(hostname);
+      cout << hostname << endl;
+    });
   }
 
   dbus::message m2 = dbus::message::new_call(

@@ -8,6 +8,7 @@
 #include <dbus/message.hpp>
 #include <dbus/detail/watch_timeout.hpp>
 #include <dbus/detail/queue.hpp>
+#include <dbus/detail/async_send_op.hpp>
 
 namespace dbus {
 
@@ -113,24 +114,17 @@ public:
       message& m,
       BOOST_ASIO_MOVE_ARG(MessageHandler) handler)
   {
-    DBusPendingCall *p;
-    dbus_connection_send_with_reply(impl,
-        m, &p, -1);
-    /*
-    dbus_pending_call_set_notify(p, 
-        &pending_call_notify, &get_io_service(), NULL);
+    boost::asio::detail::async_result_init<
+      MessageHandler, void(boost::system::error_code, message)> init(
+        BOOST_ASIO_MOVE_CAST(MessageHandler)(handler));
 
-    //FIXME Race condition: another thread might have 
-    // processed the pending call's reply before a notify
-    // function could be set. If so, the notify function
-    // will never trigger, so it must be called manually:
-    if(dbus_pending_call_get_completed(p))
-    {
-      //TODO: does this work, or might it call the notify 
-      // function too many times? Might have to use steal_reply
-      pending_call_notify(p, &get_io_service());
-    }
-    */
+    detail::async_send_op<
+      BOOST_ASIO_HANDLER_TYPE(MessageHandler,
+        void(boost::system::error_code, message))>(
+          this->get_io_service(),
+            BOOST_ASIO_MOVE_CAST(MessageHandler)(init.handler)) (impl, m);
+
+    return init.result.get();
   }
 
   void new_match(implementation_type& impl,

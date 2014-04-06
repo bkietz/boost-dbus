@@ -9,7 +9,7 @@ namespace dbus {
 
 class message
 {
-  DBusMessage *message_;
+  mutable DBusMessage *message_;
 public:
   uint32 serial;
 
@@ -75,7 +75,6 @@ public:
   {
     return dbus_message_get_destination(message_);
   }
-
 
   struct packer
   {
