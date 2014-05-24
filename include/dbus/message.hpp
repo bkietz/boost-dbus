@@ -3,13 +3,23 @@
 
 #include <dbus/dbus.h>
 #include <dbus/element.hpp>
+#include <boost/intrusive_ptr.hpp>
 
+void intrusive_ptr_add_ref(DBusMessage *m)
+{
+  dbus_message_ref(m);
+}
+
+void intrusive_ptr_release(DBusMessage *m)
+{
+  dbus_message_unref(m);
+}
 
 namespace dbus {
 
 class message
 {
-  mutable DBusMessage *message_;
+  boost::intrusive_ptr<DBusMessage> message_;
 public:
   uint32 serial;
 
@@ -31,13 +41,14 @@ public:
 
   message() {}
 
-  message(const message& m)
-    : message_(dbus_message_ref(m.message_))
+  message(DBusMessage *m)
+    : message_(dbus_message_ref(m))
   {
   }
 
-  message(DBusMessage *m)
-    : message_(dbus_message_ref(m))
+  /*
+  message(const message& m)
+    : message_(dbus_message_ref(m.message_.get()))
   {
   }
 
@@ -45,35 +56,36 @@ public:
   {
     dbus_message_unref(message_);
   }
+  */
 
   operator DBusMessage *()
   {
-    return message_;
+    return message_.get();
   }
 
   operator const DBusMessage *() const
   {
-    return message_;
+    return message_.get();
   }
 
   string get_path()
   {
-    return dbus_message_get_path(message_);
+    return dbus_message_get_path(message_.get());
   }
 
   string get_interface()
   {
-    return dbus_message_get_interface(message_);
+    return dbus_message_get_interface(message_.get());
   }
 
   string get_member()
   {
-    return dbus_message_get_member(message_);
+    return dbus_message_get_member(message_.get());
   }
 
   string get_destination()
   {
-    return dbus_message_get_destination(message_);
+    return dbus_message_get_destination(message_.get());
   }
 
   struct packer
