@@ -9,12 +9,12 @@
 #include <string>
 #include <boost/asio.hpp>
 #include <dbus/chrono.hpp>
+#include <dbus/element.hpp>
 #include <dbus/message.hpp>
 #include <dbus/connection_service.hpp>
 
 namespace dbus {
 
-using std::string;
 using namespace boost::asio;
 
 class filter;
@@ -132,32 +132,32 @@ public:
   void new_match(match &m)
   {
     this->get_service().new_match(
-	this->get_implementation(),
-        m);
+      this->get_implementation(),
+      m);
   }
 
   /// Destroy a match.
   void delete_match(match& m)
   {
     this->get_service().delete_match(
-	this->get_implementation(),
-        m);
+      this->get_implementation(),
+      m);
   }
 
   /// Create a new filter.
   void new_filter(filter& f)
   {
     this->get_service().new_filter(
-	this->get_implementation(),
-	f);
+      this->get_implementation(),
+      f);
   }
 
   /// Destroy a filter.
   void delete_filter(filter& f)
   {
     this->get_service().delete_filter(
-	this->get_implementation(),
-	f);
+      this->get_implementation(),
+      f);
   }
 
 };
