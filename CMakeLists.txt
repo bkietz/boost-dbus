@@ -33,11 +33,6 @@ find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
 
 ##############
-# Trivial executable
-add_executable(test "test.cpp")
-target_link_libraries(test -lboost_system ${DBus_LIBRARIES})
-
-##############
 # Tests
 function(cxx_test test_name)
   add_executable(${test_name} "test/${test_name}.cpp")
