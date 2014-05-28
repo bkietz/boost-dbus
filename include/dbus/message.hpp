@@ -51,18 +51,6 @@ public:
   {
   }
 
-  /*
-  message(const message& m)
-    : message_(dbus_message_ref(m.message_.get()))
-  {
-  }
-
-  ~message()
-  {
-    dbus_message_unref(message_);
-  }
-  */
-
   operator DBusMessage *()
   {
     return message_.get();
@@ -73,34 +61,41 @@ public:
     return message_.get();
   }
 
-  string get_path()
+  string get_path() const
   {
     return dbus_message_get_path(message_.get());
   }
 
-  string get_interface()
+  string get_interface() const
   {
     return dbus_message_get_interface(message_.get());
   }
 
-  string get_member()
+  string get_member() const
   {
     return dbus_message_get_member(message_.get());
   }
 
-  string get_destination()
+  string get_sender() const
+  {
+    return dbus_message_get_sender(message_.get());
+  }
+
+  string get_destination() const
   {
     return dbus_message_get_destination(message_.get());
   }
 
   struct packer
   {
+    packer(message&);
     DBusMessageIter iter_;
     template<typename Element> packer& pack(const Element&);
     template<typename Element> packer& pack_array(const Element*, size_t);
   };
   struct unpacker
   {
+    unpacker(message&);
     DBusMessageIter iter_;
     /// return type code of the next element in line for unpacking
     int code();

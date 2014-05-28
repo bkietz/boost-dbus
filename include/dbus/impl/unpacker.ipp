@@ -8,6 +8,11 @@
 
 namespace dbus {
 
+message::unpacker::unpacker(message& m)
+{
+  dbus_message_iter_init(m, &iter_);
+}
+
 namespace impl {
 
 template<typename Element> struct get_one

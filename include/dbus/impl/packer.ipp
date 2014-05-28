@@ -8,6 +8,11 @@
 
 namespace dbus {
 
+message::packer::packer(message& m)
+{
+  dbus_message_iter_init_append(m, &iter_);
+}
+
 namespace impl {
 
 template<typename Element> struct append_one

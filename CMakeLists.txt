@@ -34,6 +34,8 @@ include_directories(${GTEST_INCLUDE_DIRS})
 
 ##############
 # Tests
+enable_testing()
+
 function(cxx_test test_name)
   add_executable(${test_name} "test/${test_name}.cpp")
   target_link_libraries(${test_name} -lboost_system ${DBus_LIBRARIES})
@@ -43,3 +45,4 @@ function(cxx_test test_name)
 endfunction(cxx_test)
 
 cxx_test(avahi)
+cxx_test(message)
