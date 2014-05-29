@@ -27,7 +27,6 @@ class message
 {
   boost::intrusive_ptr<DBusMessage> message_;
 public:
-  uint32 serial;
 
   /// Create a method call message 
   static message new_call(
@@ -36,11 +35,11 @@ public:
 
   /// Create a method return message 
   static message new_return(
-      const message& call); 
+      message& call); 
 
   /// Create an error message 
   static message new_error(
-      const message& call,
+      message& call,
       const string& error_name,
       const string& error_message);
 
@@ -89,6 +88,28 @@ public:
   string get_destination() const
   {
     return dbus_message_get_destination(message_.get());
+  }
+
+  uint32 get_serial()
+  {
+    return dbus_message_get_serial(message_.get());
+  }
+
+  message& set_serial(uint32 serial)
+  {
+    dbus_message_set_serial(message_.get(), serial);
+    return *this;
+  }
+
+  uint32 get_reply_serial()
+  {
+    return dbus_message_get_reply_serial(message_.get());
+  }
+
+  message& set_reply_serial(uint32 reply_serial)
+  {
+    dbus_message_set_reply_serial(message_.get(), reply_serial);
+    return *this;
   }
 
   struct packer

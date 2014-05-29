@@ -5,6 +5,7 @@
 
 #include <gtest/gtest.h>
 #include <dbus/message.hpp>
+#include <dbus/error.hpp>
 
 
 class MessageTest
@@ -13,7 +14,7 @@ class MessageTest
 };
 
 
-TEST_F(MessageTest, ConstMessage)
+TEST_F(MessageTest, CallMessage)
 {
   using namespace dbus;
 
@@ -31,3 +32,31 @@ TEST_F(MessageTest, ConstMessage)
 
   // m.get_sender();
 }
+
+
+// I actually don't know what to do with these yet.
+/*
+TEST_F(MessageTest, ErrorMessage)
+{
+  using namespace dbus;
+
+  message m = message::new_call(
+    endpoint(
+      "org.freedesktop.Avahi",
+      "/",
+      "org.freedesktop.Avahi.Server"),
+    "GetHostName");
+
+  m.set_reply_serial(42);
+  m.set_serial(43);
+
+  message em = message::new_error(
+    m,
+    "com.skizizo.NoHostname",
+    "No hostname for you!");
+
+  const error e(em);
+
+  e.throw_if_set();
+}
+*/

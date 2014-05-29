@@ -100,7 +100,7 @@ public:
     //TODO generically convert timeout to milliseconds
     if(timeout == Duration::zero()) {
       //TODO this can return false if it failed
-      dbus_connection_send(impl, m, &m.serial);
+      dbus_connection_send(impl, m, NULL);
       return message();
     } else {
       error e;

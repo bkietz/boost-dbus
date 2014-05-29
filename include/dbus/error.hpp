@@ -67,24 +67,24 @@ public:
     return &error_;
   }
 
-  boost::system::error_code error_code();
-  boost::system::system_error system_error();
-  void throw_if_set();
+  boost::system::error_code error_code() const;
+  boost::system::system_error system_error() const;
+  void throw_if_set() const;
 };
 
-boost::system::error_code error::error_code()
+boost::system::error_code error::error_code() const
 {
   return boost::system::error_code(
       is_set(),
       *this);
 }
 
-boost::system::system_error error::system_error()
+boost::system::system_error error::system_error() const
 {
   return boost::system::system_error(error_code());
 }
 
-void error::throw_if_set()
+void error::throw_if_set() const
 {
   if(is_set()) throw system_error();
 }

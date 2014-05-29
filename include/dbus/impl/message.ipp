@@ -19,6 +19,32 @@ message message::new_call(
       method_name.c_str());
 }
 
+message message::new_return(
+    message& call)
+{
+  return dbus_message_new_method_return(call);
+}
+
+message message::new_error(
+    message& call,
+    const string& error_name,
+    const string& error_message)
+{
+  return dbus_message_new_error(call,
+    error_name.c_str(),
+    error_message.c_str());
+}
+
+message message::new_signal(
+    const endpoint& origin,
+    const string& signal_name)
+{
+  return dbus_message_new_signal(
+      origin.get_path().c_str(),
+      origin.get_interface().c_str(),
+      signal_name.c_str());
+}
+
 template<typename Element>
 message::packer message::pack(const Element& e)
 {
