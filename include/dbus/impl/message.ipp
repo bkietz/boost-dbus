@@ -9,15 +9,13 @@
 namespace dbus {
 
 message message::new_call(
-    const string& process_name,
-    const string& object_path,
-    const string& interface_name,
+    const endpoint& destination,
     const string& method_name)
 {
   return dbus_message_new_method_call(
-      process_name.c_str(),
-      object_path.c_str(),
-      interface_name.c_str(),
+      destination.get_process_name().c_str(),
+      destination.get_path().c_str(),
+      destination.get_interface().c_str(),
       method_name.c_str());
 }
 

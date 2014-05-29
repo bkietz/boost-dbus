@@ -1,7 +1,7 @@
 Boost D-Bus
 ===========
 
-This is a simple D-Bus binding powered by Boost.Asio
+This is a simple D-Bus binding powered by Boost.Asio.
 As far as possible, I try to follow Asio's idioms.
 
 Code Sample
@@ -25,14 +25,14 @@ struct logger
   }
 };
 
-int main()
+void main()
 {
-
   io_service io;
   dbus::proxy avahi(io,
+    dbus::endpoint(
 	"org.freedesktop.Avahi", // proxied object process
 	"/",                     // proxied object path
-	"org.freedesktop.Avahi.Server"); // interface
+	"org.freedesktop.Avahi.Server")); // interface
 						       
   dbus::message browser_spec(-1, -1,
     "_http._tcp", "local", unsigned(0));
@@ -41,14 +41,14 @@ int main()
     avahi.call("ServiceBrowserNew", browser_spec);
 
   dbus::proxy browser(io,
+    dbus::endpoint(
 	"org.freedesktop.Avahi",
 	response.get(0),
-	"org.freedesktop.Avahi.ServiceBrowser");
+	"org.freedesktop.Avahi.ServiceBrowser"));
 
-  browser.async_receive("ItemNew", log_fn());
+  browser.async_receive("ItemNew", logger());
 
   io.run();
-  return 0;
 }
 
 

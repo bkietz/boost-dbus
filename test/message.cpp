@@ -18,9 +18,10 @@ TEST_F(MessageTest, ConstMessage)
   using namespace dbus;
 
   const message m = message::new_call(
-    "org.freedesktop.Avahi",
-    "/",
-    "org.freedesktop.Avahi.Server",
+    endpoint(
+      "org.freedesktop.Avahi",
+      "/",
+      "org.freedesktop.Avahi.Server"),
     "GetHostName");
 
   ASSERT_EQ("org.freedesktop.Avahi", m.get_destination());

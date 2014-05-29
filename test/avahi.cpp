@@ -6,6 +6,7 @@
 #include <gtest/gtest.h>
 #include <dbus/connection.hpp>
 #include <dbus/message.hpp>
+#include <dbus/endpoint.hpp>
 #include <dbus/filter.hpp>
 #include <dbus/match.hpp>
 #include <dbus/functional.hpp>
@@ -22,6 +23,7 @@ protected:
   static boost::asio::io_service io;
   static dbus::connection system_bus;
   static dbus::string browser_path;
+  static dbus::endpoint avahi_daemon;
 };
 // It seems like these should be non-static,
 // but I get a mysterious SEGFAULT for io
@@ -32,6 +34,10 @@ protected:
 boost::asio::io_service AvahiTest::io;
 dbus::connection AvahiTest::system_bus(io, dbus::bus::system);
 dbus::string AvahiTest::browser_path;
+dbus::endpoint AvahiTest::avahi_daemon(
+  "org.freedesktop.Avahi",
+  "/",
+  "org.freedesktop.Avahi.Server");
 
 
 TEST_F(AvahiTest, GetHostName)
@@ -52,9 +58,7 @@ TEST_F(AvahiTest, GetHostName)
 
   // get hostname from the Avahi daemon
   message m = message::new_call(
-    "org.freedesktop.Avahi",
-    "/",
-    "org.freedesktop.Avahi.Server",
+    avahi_daemon,
     "GetHostName");
 
   system_bus.async_send(m, [&](error_code ec, message r){  
@@ -79,9 +83,7 @@ TEST_F(AvahiTest, ServiceBrowser)
 
   // create new service browser
   message m = message::new_call(
-    "org.freedesktop.Avahi",
-    "/",
-    "org.freedesktop.Avahi.Server",
+    avahi_daemon,
     "ServiceBrowserNew");
 
   m.pack<int32>(-1)

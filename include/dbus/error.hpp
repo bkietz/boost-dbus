@@ -6,15 +6,13 @@
 #ifndef DBUS_ERROR_HPP
 #define DBUS_ERROR_HPP
 
-#include <string>
 #include <dbus/dbus.h>
+#include <dbus/element.hpp>
 #include <dbus/message.hpp>
 #include <boost/system/error_code.hpp>
 #include <boost/system/system_error.hpp>
 
 namespace dbus {
-
-using std::string;
 
 class error
   : public boost::system::error_category

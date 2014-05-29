@@ -8,6 +8,7 @@
 
 #include <dbus/dbus.h>
 #include <dbus/element.hpp>
+#include <dbus/endpoint.hpp>
 #include <boost/intrusive_ptr.hpp>
 
 void intrusive_ptr_add_ref(DBusMessage *m)
@@ -30,19 +31,23 @@ public:
 
   /// Create a method call message 
   static message new_call(
-      const string& process_name,
-      const string& object_path,
-      const string& interface_name,
+      const endpoint& destination,
       const string& method_name);
 
   /// Create a method return message 
-  static message new_return(); 
+  static message new_return(
+      const message& call); 
 
   /// Create an error message 
-  static message new_error();
+  static message new_error(
+      const message& call,
+      const string& error_name,
+      const string& error_message);
 
   /// Create a signal message
-  static message new_signal();
+  static message new_signal(
+      const endpoint& origin,
+      const string& signal_name);
 
   message() {}
 
