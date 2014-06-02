@@ -25,8 +25,6 @@ class filter
   detail::queue<message> queue_;
 
 public:
-  // friend DBusHandlerResult connection_service::filter_callback(
-  //     DBusConnection *, DBusMessage *, void *);
 
   bool offer(message& m)
   { 
@@ -50,8 +48,6 @@ public:
     connection_.delete_filter(*this);
   }
  
-  // connection& get_connection() { return connection_; }
-
   template<typename MessageHandler>
   inline BOOST_ASIO_INITFN_RESULT_TYPE(MessageHandler,
       void(boost::system::error_code, message))
@@ -63,44 +59,8 @@ public:
   }
 
 };
-
-//TODO move this to dbus::impl stat
-DBusHandlerResult connection_service::filter_callback(
-    DBusConnection *c,
-    DBusMessage *m,
-    void *userdata)
-{
-  try
-  {
-    filter& f = *static_cast<filter *>(userdata);
-    message m_(m);
-    if(f.offer(m_))
-    {
-      return DBUS_HANDLER_RESULT_HANDLED;
-    }
-  } catch(...) {
-    // do not throw in C callbacks. Just don't.
-  }
-
-  return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-}
-
-void connection_service::new_filter(implementation_type& impl,
-    filter& f)
-{
-  dbus_connection_add_filter(impl,
-      &filter_callback, &f, NULL);
-}
-  
-void connection_service::delete_filter(implementation_type& impl,
-    filter& f)
-{
-  dbus_connection_remove_filter(impl,
-      &filter_callback, &f);
-}
-
-
 } // namespace dbus
 
 
+#include <dbus/impl/filter.ipp>
 #endif // DBUS_FILTER_HPP

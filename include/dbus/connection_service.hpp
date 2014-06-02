@@ -69,7 +69,7 @@ public:
   }
 
   void open(implementation_type& impl,
-      const int bus = (int) DBUS_BUS_SYSTEM,
+      const int bus = bus::system,
       bool shared=true)
   {
     io_service& io = this->get_io_service();
@@ -138,11 +138,6 @@ public:
   void delete_match(implementation_type& impl,
       match& m);
   
-  static DBusHandlerResult filter_callback(
-      DBusConnection *c,
-      DBusMessage *m,
-      void *userdata);
-
   void new_filter(implementation_type& impl,
       filter& f);
   

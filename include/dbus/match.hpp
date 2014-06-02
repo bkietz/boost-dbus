@@ -44,25 +44,8 @@ public:
   const std::string& get_expression() const { return expression_; }
 };
 
-//TODO move this to dbus::impl stat
-void connection_service::new_match(implementation_type& impl,
-    match& m)
-{
-  error e;
-  dbus_bus_add_match(impl, m.get_expression().c_str(), e);
-  e.throw_if_set();
-  // eventually, for complete asynchronicity, this should connect to
-  // org.freedesktop.DBus and call AddMatch
-}
-
-void connection_service::delete_match(implementation_type& impl,
-    match& m)
-{
-  error e;
-  dbus_bus_remove_match(impl, m.get_expression().c_str(), e);
-  e.throw_if_set();
-}
-
 } // namespace dbus
+
+#include <dbus/impl/match.ipp>
 
 #endif // DBUS_MATCH_HPP
