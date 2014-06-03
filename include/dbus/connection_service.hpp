@@ -6,14 +6,14 @@
 #ifndef DBUS_CONNECTION_SERVICE_HPP
 #define DBUS_CONNECTION_SERVICE_HPP
 
-#include <string>
 #include <boost/asio.hpp>
 
 #include <dbus/error.hpp>
+#include <dbus/element.hpp>
 #include <dbus/message.hpp>
-#include <dbus/detail/watch_timeout.hpp>
-#include <dbus/detail/queue.hpp>
 #include <dbus/detail/async_send_op.hpp>
+
+#include <dbus/impl/connection.ipp>
 
 namespace dbus {
 
@@ -23,7 +23,6 @@ namespace bus {
   static const int starter = DBUS_BUS_STARTER;
 } // namespace bus
 
-using std::string;
 using namespace boost::asio;
 
 class filter;
@@ -35,10 +34,10 @@ class connection_service
 public:
   static io_service::id id;
 
-  typedef DBusConnection *implementation_type;
+  typedef impl::connection implementation_type;
 
   explicit connection_service(io_service& io)
-    :  service(io)
+    : service(io)
   {
   }
 
@@ -48,7 +47,6 @@ public:
 
   void destroy(implementation_type& impl)
   {
-    dbus_connection_unref(impl);
   }
 
   void shutdown_service()
@@ -57,28 +55,21 @@ public:
   }
 
   void open(implementation_type& impl,
-      const string& address, bool shared=true)
+      const string& address, 
+      bool shared)
   {
     io_service& io = this->get_io_service();
 
-    error e;
-    impl = dbus_connection_open(address.c_str(), e);
-
-    e.throw_if_set();
-    detail::set_watch_timeout_dispatch_functions(impl, io);
+    impl = implementation_type(io, address, shared);
   }
 
   void open(implementation_type& impl,
       const int bus = bus::system,
-      bool shared=true)
+      bool shared = true)
   {
     io_service& io = this->get_io_service();
 
-    error e;
-    impl = dbus_bus_get((DBusBusType)bus, e);
-
-    e.throw_if_set();
-    detail::set_watch_timeout_dispatch_functions(impl, io);
+    impl = implementation_type(io, bus, shared);
   }
 
   message send(implementation_type& impl,
