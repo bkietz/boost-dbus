@@ -110,6 +110,9 @@ public:
       message& m,
       BOOST_ASIO_MOVE_ARG(MessageHandler) handler)
   {
+    // begin asynchronous operation
+    impl.start(this->get_io_service());
+
     boost::asio::detail::async_result_init<
       MessageHandler, void(boost::system::error_code, message)> init(
         BOOST_ASIO_MOVE_CAST(MessageHandler)(handler));

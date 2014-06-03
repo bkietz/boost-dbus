@@ -66,6 +66,11 @@ static dbus_bool_t add_watch(DBusWatch *dbus_watch, void *data)
   io_service& io = *static_cast<io_service *>(data);
 
   int fd = dbus_watch_get_unix_fd(dbus_watch);
+
+  if(fd == -1)
+    // socket based watches
+    fd = dbus_watch_get_socket(dbus_watch);
+
   stream_protocol::socket& socket =
     *new stream_protocol::socket(io);
 
@@ -162,9 +167,6 @@ static void set_watch_timeout_dispatch_functions(DBusConnection *conn, boost::as
 
     dbus_connection_set_dispatch_status_function(conn,
       &dispatch_status, &io, NULL);
-
-    dispatch_status(conn,
-      dbus_connection_get_dispatch_status(conn), &io);
 }
 
 } // namespace detail

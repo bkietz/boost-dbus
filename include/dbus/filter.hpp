@@ -54,6 +54,10 @@ public:
   async_dispatch(
       BOOST_ASIO_MOVE_ARG(MessageHandler) handler)
   {
+    // begin asynchronous operation
+    connection_.get_implementation().start(
+      connection_.get_io_service());
+
     return queue_.async_pop(
       BOOST_ASIO_MOVE_CAST(MessageHandler)(handler));
   }

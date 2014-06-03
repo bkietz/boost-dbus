@@ -160,6 +160,8 @@ public:
       f);
   }
 
+  //FIXME the only way around this I see is to expose start() here, which seems ugly
+  friend class filter;
 };
 
 

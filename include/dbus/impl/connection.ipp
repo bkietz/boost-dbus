@@ -48,7 +48,6 @@ public:
     {
       conn = dbus_bus_get_private((DBusBusType)bus, e);
     }
-
     e.throw_if_set();
 
     dbus_connection_set_exit_on_disconnect(conn.get(), false);
@@ -69,7 +68,9 @@ public:
     {
       conn = dbus_connection_open_private(address.c_str(), e);
     }
+    e.throw_if_set();
 
+    dbus_bus_register(conn.get(), e);
     e.throw_if_set();
 
     dbus_connection_set_exit_on_disconnect(conn.get(), false);
@@ -91,8 +92,15 @@ public:
     return conn.get();
   }
 
-  void start()
+  // begin asynchronous operation
+  //FIXME should not get io from an argument
+  void start(boost::asio::io_service& io)
   {
+    if(is_paused)
+    {
+      is_paused = false;
+      io.post(detail::dispatch_handler(io, conn.get()));
+    }
   }
 };
 
