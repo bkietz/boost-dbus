@@ -73,12 +73,7 @@ public:
   message send(implementation_type& impl,
       message& m)
   {
-    error e;
-    message reply(dbus_connection_send_with_reply_and_block(impl, 
-        m, -1, e));
-
-    e.throw_if_set();
-    return reply;
+    return impl.send_with_reply_and_block(m);
   }
 
   template <typename Duration>
@@ -86,18 +81,13 @@ public:
       message& m,
       const Duration& timeout)
   {
-    //TODO generically convert timeout to milliseconds
     if(timeout == Duration::zero()) {
       //TODO this can return false if it failed
-      dbus_connection_send(impl, m, NULL);
+      impl.send(m);
       return message();
     } else {
-      error e;
-      message reply(dbus_connection_send_with_reply_and_block(impl, 
-          m, chrono::milliseconds(timeout).count(), e));
-
-      e.throw_if_set();
-      return reply;
+      return impl.send_with_reply_and_block(m,
+        chrono::milliseconds(timeout).count());
     }
   }
 

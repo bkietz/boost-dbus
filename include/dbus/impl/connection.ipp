@@ -66,6 +66,31 @@ public:
     return conn;
   }
 
+  message send_with_reply_and_block(message& m,
+      int timeout_in_milliseconds = -1)
+  {
+    error e;
+    message reply(dbus_connection_send_with_reply_and_block(conn, 
+        m, timeout_in_milliseconds, e));
+
+    e.throw_if_set();
+    return reply;
+  }
+
+  void send(message& m)
+  {
+    // ignoring message serial for now
+    dbus_connection_send(conn, m, NULL);
+  }
+
+  void send_with_reply(message& m,
+      DBusPendingCall **p,
+      int timeout_in_milliseconds = -1)
+  {
+    dbus_connection_send_with_reply(conn,
+        m, p, timeout_in_milliseconds);
+  }
+
   // begin asynchronous operation
   //FIXME should not get io from an argument
   void start(boost::asio::io_service& io)

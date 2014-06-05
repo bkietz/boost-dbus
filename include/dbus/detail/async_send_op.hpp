@@ -12,19 +12,20 @@
 #include <dbus/message.hpp>
 #include <dbus/error.hpp>
 
+#include <dbus/impl/connection.ipp>
+
 namespace dbus {
 namespace detail {
 
 template<typename MessageHandler>
 struct async_send_op
 {
-  typedef async_send_op<MessageHandler> op_type;
   boost::asio::io_service& io_;
   message message_;
   MessageHandler handler_;
   async_send_op(boost::asio::io_service& io, BOOST_ASIO_MOVE_ARG(MessageHandler) handler);
   static void callback(DBusPendingCall *p, void *userdata); // for C API
-  void operator()(DBusConnection *c, message& m); // initiate operation
+  void operator()(impl::connection& c, message& m); // initiate operation
   void operator()(); // bound completion handler form
 };
 
@@ -37,11 +38,10 @@ async_send_op<MessageHandler>::async_send_op(boost::asio::io_service& io,
 }
 
 template<typename MessageHandler>
-void async_send_op<MessageHandler>::operator()(DBusConnection *c, message& m)
+void async_send_op<MessageHandler>::operator()(impl::connection& c, message& m)
 {
   DBusPendingCall *p;
-  dbus_connection_send_with_reply(c,
-      m, &p, -1);
+  c.send_with_reply(m, &p, -1);
 
   // We have to throw this onto the heap so that the
   // C API can store it as `void *userdata`
