@@ -16,7 +16,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 
 ###############
 # import Boost
-find_package(Boost 1.54 REQUIRED)
+find_package(Boost 1.54 COMPONENTS system REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
 
@@ -38,7 +38,8 @@ enable_testing()
 
 function(cxx_test test_name)
   add_executable(${test_name} "test/${test_name}.cpp")
-  target_link_libraries(${test_name} -lboost_system ${DBus_LIBRARIES})
+  target_link_libraries(${test_name} ${Boost_LIBRARIES})
+  target_link_libraries(${test_name} ${DBus_LIBRARIES})
   target_link_libraries(${test_name} ${GTEST_BOTH_LIBRARIES})
   target_link_libraries(${test_name} -pthread)
   add_test(${test_name} ${test_name} "--gtest_output=xml:${test_name}.xml")

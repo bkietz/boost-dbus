@@ -9,17 +9,7 @@
 #include <dbus/dbus.h>
 #include <dbus/detail/watch_timeout.hpp>
 
-#include <boost/intrusive_ptr.hpp>
-
-void intrusive_ptr_add_ref(DBusConnection *c)
-{
-  dbus_connection_ref(c);
-}
-
-void intrusive_ptr_release(DBusConnection *c)
-{
-  dbus_connection_unref(c);
-}
+#include <boost/atomic.hpp>
 
 namespace dbus {
 namespace impl {
@@ -27,79 +17,76 @@ namespace impl {
 class connection
 {
 public:
-  boost::intrusive_ptr<DBusConnection> conn;
-  bool is_shared;
-  bool is_paused;
+  boost::atomic<bool> is_paused;
+  DBusConnection *conn;
 
   connection()
+    : is_paused(true),
+      conn(NULL)
   {
   }
 
-  connection(boost::asio::io_service& io, int bus, bool shared)
-    : is_shared(shared), 
-      is_paused(true)
+  void open(boost::asio::io_service& io, int bus)
   {
     error e;
-    if(is_shared)
-    {
-      conn = dbus_bus_get((DBusBusType)bus, e);
-    }
-    else
-    {
-      conn = dbus_bus_get_private((DBusBusType)bus, e);
-    }
+    conn = dbus_bus_get_private((DBusBusType)bus, e);
     e.throw_if_set();
 
-    dbus_connection_set_exit_on_disconnect(conn.get(), false);
+    dbus_connection_set_exit_on_disconnect(conn, false);
 
-    detail::set_watch_timeout_dispatch_functions(conn.get(), io);
+    detail::set_watch_timeout_dispatch_functions(conn, io);
   }
 
-  connection(boost::asio::io_service& io, const string& address, bool shared)
-    : is_shared(shared), 
-      is_paused(true)
+  void open(boost::asio::io_service& io, const string& address)
   {
     error e;
-    if(shared)
-    {
-      conn = dbus_connection_open(address.c_str(), e);
-    }
-    else
-    {
-      conn = dbus_connection_open_private(address.c_str(), e);
-    }
+    conn = dbus_connection_open_private(address.c_str(), e);
     e.throw_if_set();
 
-    dbus_bus_register(conn.get(), e);
+    dbus_bus_register(conn, e);
     e.throw_if_set();
 
-    dbus_connection_set_exit_on_disconnect(conn.get(), false);
+    dbus_connection_set_exit_on_disconnect(conn, false);
 
-    detail::set_watch_timeout_dispatch_functions(conn.get(), io);
+    detail::set_watch_timeout_dispatch_functions(conn, io);
   }
 
   ~connection()
   {
-    if(!is_shared) dbus_connection_close(conn.get());
+    dbus_connection_close(conn);
+    dbus_connection_unref(conn);
   }
 
   operator DBusConnection *() 
   { 
-    return conn.get();
+    return conn;
   }
   operator const DBusConnection *() const 
   { 
-    return conn.get();
+    return conn;
   }
 
   // begin asynchronous operation
   //FIXME should not get io from an argument
   void start(boost::asio::io_service& io)
   {
-    if(is_paused)
+    bool old_value(true);
+    if(is_paused.compare_exchange_strong(old_value, false))
     {
-      is_paused = false;
-      io.post(detail::dispatch_handler(io, conn.get()));
+      // If two threads call connection::async_send()
+      // simultaneously on a paused connection, then
+      // only one will pass the CAS instruction and
+      // only one dispatch_handler will be injected.
+      io.post(detail::dispatch_handler(io, conn));
+    }
+  }
+
+  void cancel(boost::asio::io_service& io)
+  {
+    bool old_value(false);
+    if(is_paused.compare_exchange_strong(old_value, true))
+    {
+      //TODO
     }
   }
 };

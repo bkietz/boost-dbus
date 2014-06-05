@@ -21,18 +21,13 @@ protected:
   {
   }
   static boost::asio::io_service io;
-  static dbus::connection system_bus;
   static dbus::string browser_path;
   static dbus::endpoint avahi_daemon;
 };
 // It seems like these should be non-static,
 // but I get a mysterious SEGFAULT for io
 //   ¿related: http://stackoverflow.com/questions/18009156/boost-asio-segfault-no-idea-why
-// and a C++ exception with description
-// "assign: File exists" for system_bus
-// (probably indicates I should upgrade connection's constructor)
 boost::asio::io_service AvahiTest::io;
-dbus::connection AvahiTest::system_bus(io, dbus::bus::system);
 dbus::string AvahiTest::browser_path;
 dbus::endpoint AvahiTest::avahi_daemon(
   "org.freedesktop.Avahi",
@@ -46,6 +41,7 @@ TEST_F(AvahiTest, GetHostName)
   using namespace dbus;
   using boost::system::error_code;
 
+  connection system_bus(io, "unix:path=/var/run/dbus/system_bus_socket");
   string avahi_hostname;
   string unix_hostname;
 
@@ -81,6 +77,8 @@ TEST_F(AvahiTest, ServiceBrowser)
   using namespace dbus;
   using boost::system::error_code;
 
+  connection system_bus(io, bus::system);
+
   // create new service browser
   message m = message::new_call(
     avahi_daemon,
@@ -106,6 +104,8 @@ TEST_F(AvahiTest, BrowseForHttp)
   using namespace boost::asio;
   using namespace dbus;
   using boost::system::error_code;
+
+  connection system_bus(io, bus::system);
 
   match m(system_bus, "type='signal',path='" + browser_path + "'");
   filter f(system_bus, [](message& m){

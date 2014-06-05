@@ -55,21 +55,19 @@ public:
   }
 
   void open(implementation_type& impl,
-      const string& address, 
-      bool shared)
+      const string& address)
   {
     io_service& io = this->get_io_service();
 
-    impl = implementation_type(io, address, shared);
+    impl.open(io, address);
   }
 
   void open(implementation_type& impl,
-      const int bus = bus::system,
-      bool shared = true)
+      const int bus = bus::system)
   {
     io_service& io = this->get_io_service();
 
-    impl = implementation_type(io, bus, shared);
+    impl.open(io, bus);
   }
 
   message send(implementation_type& impl,

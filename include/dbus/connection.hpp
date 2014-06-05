@@ -36,17 +36,14 @@ public:
    *
    * @param address The address of the bus to connect to.
    *
-   * @param shared Set false to open a private connection.
-   *
    * @throws boost::system::system_error When opening the connection failed.
    */
-  connection(io_service& io, const string& address, bool shared=true)
+  connection(io_service& io, const string& address)
     : basic_io_object<connection_service>(io)
   {
     this->get_service().open(
       this->get_implementation(),
-      address,
-      shared);
+      address);
   }
 
   /// Open a connection to a well-known bus.
@@ -56,18 +53,15 @@ public:
    *
    * @param bus The well-known bus to connect to.
    *
-   * @param shared Set false to open a private connection.
-   *
    * @throws boost::system::system_error When opening the connection failed.
    */
   // TODO: change this unsigned to an enumeration 
-  connection(io_service& io, const int bus, bool shared=true)
+  connection(io_service& io, const int bus)
     : basic_io_object<connection_service>(io)
   {
     this->get_service().open(
       this->get_implementation(),
-      bus,
-      shared);
+      bus);
   }
 
   /// Send a message.
