@@ -75,18 +75,18 @@ public:
     }
   }
 
-  template<typename PopHandler>
-  inline BOOST_ASIO_INITFN_RESULT_TYPE(PopHandler,
+  template<typename MessageHandler>
+  inline BOOST_ASIO_INITFN_RESULT_TYPE(MessageHandler,
       void(boost::system::error_code, message_type))
-  async_pop(BOOST_ASIO_MOVE_ARG(PopHandler) h)
+  async_pop(BOOST_ASIO_MOVE_ARG(MessageHandler) h)
   {
     typedef ::boost::asio::detail::async_result_init<
-      PopHandler, void(boost::system::error_code, message_type)> init_type;
+      MessageHandler, void(boost::system::error_code, message_type)> init_type;
    
     mutex_type::scoped_lock lock(mutex);
     if(messages.empty())
     {
-      init_type init(BOOST_ASIO_MOVE_CAST(PopHandler)(h));
+      init_type init(BOOST_ASIO_MOVE_CAST(MessageHandler)(h));
 
       handlers.push_back(init.handler);
 
@@ -100,7 +100,7 @@ public:
 
       lock.unlock();
 
-      init_type init(BOOST_ASIO_MOVE_CAST(PopHandler)(h));
+      init_type init(BOOST_ASIO_MOVE_CAST(MessageHandler)(h));
 
       io.post(closure(
         BOOST_ASIO_MOVE_CAST(handler_type)(init.handler), m));
