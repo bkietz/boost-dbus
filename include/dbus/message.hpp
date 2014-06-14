@@ -10,6 +10,7 @@
 #include <dbus/element.hpp>
 #include <dbus/endpoint.hpp>
 #include <boost/intrusive_ptr.hpp>
+#include <dbus/impl/message_iterator.hpp>
 
 void intrusive_ptr_add_ref(DBusMessage *m)
 {
@@ -115,14 +116,14 @@ public:
   struct packer
   {
     packer(message&);
-    DBusMessageIter iter_;
+    impl::message_iterator iter_;
     template<typename Element> packer& pack(const Element&);
     template<typename Element> packer& pack_array(const Element*, size_t);
   };
   struct unpacker
   {
     unpacker(message&);
-    DBusMessageIter iter_;
+    impl::message_iterator iter_;
     /// return type code of the next element in line for unpacking
     int code();
     template<typename Element> unpacker& unpack(Element&);
@@ -140,5 +141,6 @@ public:
 #include <dbus/impl/packer.ipp>
 #include <dbus/impl/unpacker.ipp>
 #include <dbus/impl/message.ipp>
+#include <dbus/impl/message_iterator.ipp>
 
 #endif // DBUS_MESSAGE_HPP

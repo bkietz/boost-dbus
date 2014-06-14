@@ -10,7 +10,7 @@ namespace dbus {
 
 message::packer::packer(message& m)
 {
-  dbus_message_iter_init_append(m, &iter_);
+  impl::message_iterator::init_append(m, iter_);
 }
 
 namespace impl {
@@ -20,8 +20,7 @@ template<typename Element> struct append_one
   //TODO: throw if invalid Element
   append_one(message::packer& p, const Element& e)
   {
-    dbus_message_iter_append_basic(&p.iter_, 
-        element<Element>::code, &e);
+    p.iter_.append_basic(element<Element>::code, &e);
   }
 };
 
@@ -30,8 +29,7 @@ template<> struct append_one<string>
   append_one(message::packer& p, const string& e)
   {
     const char *c = e.c_str();
-    dbus_message_iter_append_basic(&p.iter_, 
-        element<string>::code, &c);
+    p.iter_.append_basic(element<string>::code, &c);
   }
 };
 

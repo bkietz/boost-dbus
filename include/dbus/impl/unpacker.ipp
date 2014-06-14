@@ -10,7 +10,7 @@ namespace dbus {
 
 message::unpacker::unpacker(message& m)
 {
-  dbus_message_iter_init(m, &iter_);
+  impl::message_iterator::init(m, iter_);
 }
 
 namespace impl {
@@ -20,8 +20,8 @@ template<typename Element> struct get_one
   //TODO: throw if invalid Element
   get_one(message::unpacker& u, Element& e)
   {
-    dbus_message_iter_get_basic(&u.iter_, &e);
-    dbus_message_iter_next(&u.iter_);
+    u.iter_.get_basic(&e);
+    u.iter_.next();
   }
 };
 
@@ -30,9 +30,9 @@ template<> struct get_one<string>
   get_one(message::unpacker& u, string& e)
   {
     const char *c;
-    dbus_message_iter_get_basic(&u.iter_, &c);
+    u.iter_.get_basic(&c);
     e = c;
-    dbus_message_iter_next(&u.iter_);
+    u.iter_.next();
   }
 };
 
@@ -48,7 +48,7 @@ message::unpacker& message::unpacker::unpack(Element& e)
 
 int message::unpacker::code()
 {
-  return dbus_message_iter_get_arg_type(&iter_);
+  return iter_.get_arg_type();
 }
 
 
