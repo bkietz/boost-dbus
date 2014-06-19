@@ -13,48 +13,27 @@ message::packer::packer(message& m)
   impl::message_iterator::init_append(m, iter_);
 }
 
-namespace impl {
-
-template<typename Element> struct append_one
-{
-  //TODO: throw if invalid Element
-  append_one(message::packer& p, const Element& e)
-  {
-    p.iter_.append_basic(element<Element>::code, &e);
-  }
-};
-
-template<> struct append_one<string>
-{
-  append_one(message::packer& p, const string& e)
-  {
-    const char *c = e.c_str();
-    p.iter_.append_basic(element<string>::code, &c);
-  }
-};
-
-/*
-template<> struct append_one<const char *>
-{
-  append_one(message::packer& p, const char *e)
-  {
-    dbus_message_iter_append_basic(&p.iter_, 
-        element<string>::code, &e);
-  }
-};
-*/
-
-} // namespace impl
-
-
-#include <iostream>
 template<typename Element>
-message::packer& message::packer::pack(const Element& e)
+message::packer& operator<<(message::packer& p, Element e)
 {
-  impl::append_one<Element>(*this, e);
-  return *this;
+  p.iter_.append_basic(element<Element>::code, &e);
+  return p;
 }
 
+template<>
+message::packer& operator<<(message::packer& p, string e)
+{
+  const char *c = e.c_str();
+  p.iter_.append_basic(element<string>::code, &c);
+  return p;
+}
+
+template<>
+message::packer& operator<<(message::packer& p, const char *c)
+{
+  p.iter_.append_basic(element<string>::code, &c);
+  return p;
+}
 
 } // namespace dbus
 

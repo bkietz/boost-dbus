@@ -45,18 +45,6 @@ message message::new_signal(
       signal_name.c_str());
 }
 
-template<typename Element>
-message::packer message::pack(const Element& e)
-{
-  return packer(*this).pack(e);
-}
-
-template<typename Element>
-message::unpacker message::unpack(Element& e)
-{
-  return unpacker(*this).unpack(e);
-}
-
 } // namespace dbus
 
 #endif // DBUS_MESSAGE_IPP

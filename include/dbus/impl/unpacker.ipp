@@ -6,6 +6,9 @@
 #ifndef DBUS_UNPACKER_IPP
 #define DBUS_UNPACKER_IPP
 
+#include <boost/utility/enable_if.hpp>
+#include <dbus/element.hpp>
+
 namespace dbus {
 
 message::unpacker::unpacker(message& m)
@@ -13,44 +16,24 @@ message::unpacker::unpacker(message& m)
   impl::message_iterator::init(m, iter_);
 }
 
-namespace impl {
-
-template<typename Element> struct get_one
-{
-  //TODO: throw if invalid Element
-  get_one(message::unpacker& u, Element& e)
-  {
-    u.iter_.get_basic(&e);
-    u.iter_.next();
-  }
-};
-
-template<> struct get_one<string>
-{
-  get_one(message::unpacker& u, string& e)
-  {
-    const char *c;
-    u.iter_.get_basic(&c);
-    e = c;
-    u.iter_.next();
-  }
-};
-
-} // namespace impl
-
-
 template<typename Element>
-message::unpacker& message::unpacker::unpack(Element& e)
+typename boost::enable_if<is_fixed_type<Element>, message::unpacker&>::type
+operator>>(message::unpacker& u, Element& e)
 {
-  impl::get_one<Element>(*this, e);
-  return *this;
+  u.iter_.get_basic(&e);
+  u.iter_.next();
+  return u;
 }
 
-int message::unpacker::code()
+message::unpacker&
+operator>>(message::unpacker& u, string& s)
 {
-  return iter_.get_arg_type();
+  const char *c;
+  u.iter_.get_basic(&c);
+  s.assign(c);
+  u.iter_.next();
+  return u;
 }
-
 
 } // namespace dbus
 

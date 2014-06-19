@@ -115,24 +115,32 @@ public:
 
   struct packer
   {
-    packer(message&);
     impl::message_iterator iter_;
-    template<typename Element> packer& pack(const Element&);
-    template<typename Element> packer& pack_array(const Element*, size_t);
+    packer(message& m);
+    template<typename Element> packer& pack(const Element& e)
+    {
+      return *this << e;
+    }
   };
   struct unpacker
   {
-    unpacker(message&);
     impl::message_iterator iter_;
-    /// return type code of the next element in line for unpacking
-    int code();
-    template<typename Element> unpacker& unpack(Element&);
-    int array_code();
-    template<typename Element> unpacker& unpack_array(Element*&, size_t);
+    unpacker(message& m);
+    template<typename Element> unpacker& unpack(Element& e)
+    {
+      return *this >> e;
+    }
   };
 
-  template<typename Element> packer pack(const Element&);
-  template<typename Element> unpacker unpack(Element&);
+  template<typename Element> packer pack(const Element& e)
+  {
+    return packer(*this).pack(e);
+  }
+
+  template<typename Element> unpacker unpack(Element& e)
+  {
+    return unpacker(*this).unpack(e);
+  }
 
 };
 

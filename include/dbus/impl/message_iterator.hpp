@@ -35,6 +35,7 @@ public:
   bool next();
   bool has_next();
   int get_arg_type();
+
   void get_basic(void *value);
 
   void recurse(message_iterator&);
