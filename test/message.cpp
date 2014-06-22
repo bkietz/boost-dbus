@@ -30,6 +30,18 @@ TEST_F(MessageTest, CallMessage)
   ASSERT_EQ("org.freedesktop.Avahi.Server", m.get_interface());
   ASSERT_EQ("GetHostName", m.get_member());
 
+  message m2 = message::new_call(
+    endpoint(
+      "org.freedesktop.Avahi",
+      "/",
+      "org.freedesktop.Avahi.Server"),
+    "GetHostName");
+
+  m2 << 1;
+  int i;
+  m2 >> i;
+  ASSERT_EQ(i, 1);
+
   // m.get_sender();
 }
 

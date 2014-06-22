@@ -144,6 +144,18 @@ public:
 
 };
 
+template<typename Element>
+message::packer operator<<(message m, const Element& e)
+{
+  return message::packer(m).pack(e);
+}
+
+template<typename Element>
+message::unpacker operator>>(message m, Element& e)
+{
+  return message::unpacker(m).unpack(e);
+}
+
 } // namespace dbus
 
 #include <dbus/impl/packer.ipp>
