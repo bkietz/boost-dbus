@@ -7,6 +7,7 @@
 #define DBUS_ELEMENT_HPP
 
 #include <dbus/dbus.h>
+#include <boost/cstdint.hpp>
 #include <string>
 
 namespace dbus {
@@ -17,13 +18,15 @@ namespace dbus {
  */
 // bool // is this simply valid? It might pack wrong...
         // http://maemo.org/api_refs/5.0/5.0-final/dbus/api/group__DBusTypes.html
-typedef unsigned char byte;
-typedef short int16;
-typedef unsigned short uint16;
-typedef int int32;
-typedef unsigned int uint32;
-typedef long long int64;
-typedef unsigned long long uint64;
+typedef boost::uint8_t  byte;
+
+typedef boost:: int16_t int16;
+typedef boost::uint16_t uint16;
+typedef boost:: int32_t int32;
+typedef boost::uint32_t uint32;
+
+typedef boost:: int64_t int64;
+typedef boost::uint64_t uint64;
 // double
 // unix_fd
 
@@ -36,8 +39,6 @@ struct signature
 {
   string value;
 };
-
-//TODO: add more types...
 
 /// Traits template for message elements
 /**
@@ -183,10 +184,6 @@ template<> struct is_string_type< signature >
 };
 
 
-
-
-
 } // namespace dbus
-
 
 #endif // DBUS_ELEMENT_HPP

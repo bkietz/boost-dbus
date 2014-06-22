@@ -6,6 +6,9 @@
 #ifndef DBUS_PACKER_IPP
 #define DBUS_PACKER_IPP
 
+#include <boost/utility/enable_if.hpp>
+#include <dbus/element.hpp>
+
 namespace dbus {
 
 message::packer::packer(message& m)
@@ -14,25 +17,23 @@ message::packer::packer(message& m)
 }
 
 template<typename Element>
-message::packer& operator<<(message::packer& p, Element e)
+typename boost::enable_if<is_fixed_type<Element>, message::packer&>::type
+operator<<(message::packer& p, const Element& e)
 {
   p.iter_.append_basic(element<Element>::code, &e);
   return p;
 }
 
-template<>
-message::packer& operator<<(message::packer& p, string e)
-{
-  const char *c = e.c_str();
-  p.iter_.append_basic(element<string>::code, &c);
-  return p;
-}
-
-template<>
 message::packer& operator<<(message::packer& p, const char *c)
 {
   p.iter_.append_basic(element<string>::code, &c);
   return p;
+}
+
+message::packer& operator<<(message::packer& p, const string& e)
+{
+  const char *c = e.c_str();
+  return p << c;
 }
 
 } // namespace dbus
