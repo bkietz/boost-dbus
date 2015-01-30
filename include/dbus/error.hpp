@@ -44,14 +44,14 @@ public:
     dbus_error_free(&error_);
   }
 
-  const char *name() const BOOST_SYSTEM_NOEXCEPT
+  virtual const char *name() const BOOST_SYSTEM_NOEXCEPT
   {
-    return error_.name;
+    return "DBus Error";
   }
 
   string message(int value) const
   {
-    return error_.message;
+    return "";
   }
 
   bool is_set() const
@@ -74,18 +74,24 @@ public:
   void throw_if_set() const;
 };
 
+inline const boost::system::error_category&
+dbus_category() BOOST_SYSTEM_NOEXCEPT
+{
+  static error e;
+  return e;
+}
+
 inline
 boost::system::error_code error::error_code() const
 {
-  return boost::system::error_code(
-      is_set(),
-      *this);
+  return boost::system::error_code(is_set(), dbus_category());
 }
 
 inline
 boost::system::system_error error::system_error() const
 {
-  return boost::system::system_error(error_code());
+  return boost::system::system_error(error_code(),
+                                     std::string(error_.name) + ": " + error_.message);
 }
 
 inline
