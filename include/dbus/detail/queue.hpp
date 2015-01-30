@@ -70,8 +70,7 @@ public:
 
       lock.unlock();
 
-      io.post(
-        closure(BOOST_ASIO_MOVE_CAST(handler_type)(h), m));
+      io.post(closure(BOOST_ASIO_MOVE_CAST(handler_type)(h), m));
     }
   }
 
@@ -102,8 +101,7 @@ public:
 
       init_type init(BOOST_ASIO_MOVE_CAST(MessageHandler)(h));
 
-      io.post(closure(
-        BOOST_ASIO_MOVE_CAST(handler_type)(init.handler), m));
+      io.post(closure(init.handler, m));
 
       return init.result.get();
     }
