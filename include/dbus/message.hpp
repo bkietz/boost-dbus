@@ -85,6 +85,11 @@ public:
     return dbus_message_get_member(message_.get());
   }
 
+  string get_type() const
+  {
+    return dbus_message_type_to_string(dbus_message_get_type(message_.get()));
+  }
+
   string get_sender() const
   {
     return dbus_message_get_sender(message_.get());
@@ -92,7 +97,8 @@ public:
 
   string get_destination() const
   {
-    return dbus_message_get_destination(message_.get());
+    const char* dst = dbus_message_get_destination(message_.get());
+    return (dst != nullptr) ? dst : "(null)";
   }
 
   uint32 get_serial()
@@ -158,6 +164,18 @@ template<typename Element>
 message::unpacker operator>>(message m, Element& e)
 {
   return message::unpacker(m).unpack(e);
+}
+
+inline std::ostream&
+operator<<(std::ostream& os, const message& m)
+{
+  os << "type='" << m.get_type() << "',"
+     << "sender='" << m.get_sender() << "',"
+     << "interface='" << m.get_interface() << "',"
+     << "member='" << m.get_member() << "',"
+     << "path='" << m.get_path() << "',"
+     << "destination='" << m.get_destination() << "'";
+  return os;
 }
 
 } // namespace dbus
