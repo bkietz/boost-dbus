@@ -1,13 +1,5 @@
-Boost D-Bus
-===========
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
-This is a simple D-Bus binding powered by Boost.Asio.
-As far as possible, I try to follow Asio's idioms.
-
-Code Sample
------------
-
-```c++
 #include <iostream>
 
 #include <boost/asio.hpp>
@@ -43,8 +35,3 @@ main()
   io.run();
   return 0;
 }
-```
-
-To compile example:
-
-    clang++ -std=c++11 -I include/ `pkg-config dbus-1 --cflags --libs` test/example.cpp -l boost_system

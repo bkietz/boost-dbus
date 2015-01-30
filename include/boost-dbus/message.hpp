@@ -72,33 +72,32 @@ public:
 
   string get_path() const
   {
-    return dbus_message_get_path(message_.get());
+    return sanitize(dbus_message_get_path(message_.get()));
   }
 
   string get_interface() const
   {
-    return dbus_message_get_interface(message_.get());
+    return sanitize(dbus_message_get_interface(message_.get()));
   }
 
   string get_member() const
   {
-    return dbus_message_get_member(message_.get());
+    return sanitize(dbus_message_get_member(message_.get()));
   }
 
   string get_type() const
   {
-    return dbus_message_type_to_string(dbus_message_get_type(message_.get()));
+    return sanitize(dbus_message_type_to_string(dbus_message_get_type(message_.get())));
   }
 
   string get_sender() const
   {
-    return dbus_message_get_sender(message_.get());
+    return sanitize(dbus_message_get_sender(message_.get()));
   }
 
   string get_destination() const
   {
-    const char* dst = dbus_message_get_destination(message_.get());
-    return (dst != nullptr) ? dst : "(null)";
+    return sanitize(dbus_message_get_destination(message_.get()));
   }
 
   uint32 get_serial()
@@ -152,6 +151,12 @@ public:
     return unpacker(*this).unpack(e);
   }
 
+private:
+  static std::string
+  sanitize(const char* str)
+  {
+    return (str == NULL) ? "(null)" : str;
+  }
 };
 
 template<typename Element>
