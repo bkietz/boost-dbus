@@ -119,13 +119,12 @@ public:
 
   void delete_match(implementation_type& impl,
       match& m);
-  
+
   void new_filter(implementation_type& impl,
       filter& f);
-  
+
   void delete_filter(implementation_type& impl,
       filter& f);
-
 };
 
 io_service::id connection_service::id;

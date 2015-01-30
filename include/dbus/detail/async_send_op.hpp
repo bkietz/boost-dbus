@@ -51,13 +51,13 @@ void async_send_op<MessageHandler>::operator()(impl::connection& c, message& m)
   dbus_pending_call_set_notify(p,
       &callback, op, NULL);
 
-  //FIXME Race condition: another thread might have 
+  //FIXME Race condition: another thread might have
   // processed the pending call's reply before a notify
   // function could be set. If so, the notify function
   // will never trigger, so it must be called manually:
   if(dbus_pending_call_get_completed(p))
   {
-    //TODO: does this work, or might it call the notify 
+    //TODO: does this work, or might it call the notify
     // function too many times? Might have to use steal_reply
     //callback(p, op);
   }

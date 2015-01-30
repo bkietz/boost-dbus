@@ -47,8 +47,8 @@ private:
   public:
     void operator()() { handler_(error_, message_); }
     closure(
-	BOOST_ASIO_MOVE_ARG(handler_type) h, 
-	Message m,
+        BOOST_ASIO_MOVE_ARG(handler_type) h,
+        Message m,
         boost::system::error_code e = boost::system::error_code())
       : handler_(h),
         message_(m),
@@ -82,7 +82,7 @@ public:
   {
     typedef ::boost::asio::detail::async_result_init<
       MessageHandler, void(boost::system::error_code, message_type)> init_type;
-   
+
     mutex_type::scoped_lock lock(mutex);
     if(messages.empty())
     {

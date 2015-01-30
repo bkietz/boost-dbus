@@ -31,16 +31,16 @@ class message
   boost::intrusive_ptr<DBusMessage> message_;
 public:
 
-  /// Create a method call message 
+  /// Create a method call message
   static message new_call(
       const endpoint& destination,
       const string& method_name);
 
-  /// Create a method return message 
+  /// Create a method return message
   static message new_return(
-      message& call); 
+      message& call);
 
-  /// Create an error message 
+  /// Create an error message
   static message new_error(
       message& call,
       const string& error_name,

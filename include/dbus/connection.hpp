@@ -56,7 +56,7 @@ public:
    *
    * @throws boost::system::system_error When opening the connection failed.
    */
-  // TODO: change this unsigned to an enumeration 
+  // TODO: change this unsigned to an enumeration
   connection(io_service& io, const int bus)
     : basic_io_object<connection_service>(io)
   {

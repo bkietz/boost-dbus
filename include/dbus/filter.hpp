@@ -28,10 +28,10 @@ class filter
 public:
 
   bool offer(message& m)
-  { 
+  {
     bool filtered = predicate_(m);
     if(filtered) queue_.push(m);
-    return filtered; 
+    return filtered;
   }
 
   template<typename MessagePredicate>
@@ -48,7 +48,7 @@ public:
   {
     connection_.delete_filter(*this);
   }
- 
+
   template<typename MessageHandler>
   inline BOOST_ASIO_INITFN_RESULT_TYPE(MessageHandler,
       void(boost::system::error_code, message))
