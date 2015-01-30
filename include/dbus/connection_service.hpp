@@ -29,15 +29,13 @@ class filter;
 class match;
 
 class connection_service
-  : public io_service::service
+  : public boost::asio::detail::service_base<connection_service>
 {
 public:
-  static io_service::id id;
-
   typedef impl::connection implementation_type;
 
   explicit connection_service(io_service& io)
-    : service(io)
+    : boost::asio::detail::service_base<connection_service>(io)
   {
   }
 
@@ -126,11 +124,6 @@ public:
   void delete_filter(implementation_type& impl,
       filter& f);
 };
-
-io_service::id connection_service::id;
-
-
-
 
 } // namespace dbus
 

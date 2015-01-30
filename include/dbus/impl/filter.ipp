@@ -10,6 +10,7 @@
 namespace dbus {
 namespace impl {
 
+inline
 DBusHandlerResult filter_callback(
     DBusConnection *c,
     DBusMessage *m,
@@ -32,13 +33,15 @@ DBusHandlerResult filter_callback(
 
 } // namespace impl
 
+inline
 void connection_service::new_filter(implementation_type& impl,
     filter& f)
 {
   dbus_connection_add_filter(impl,
       &impl::filter_callback, &f, NULL);
 }
-  
+
+inline
 void connection_service::delete_filter(implementation_type& impl,
     filter& f)
 {

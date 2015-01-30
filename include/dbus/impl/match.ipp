@@ -9,6 +9,7 @@
 
 namespace dbus {
 
+inline
 void connection_service::new_match(implementation_type& impl,
     match& m)
 {
@@ -19,6 +20,7 @@ void connection_service::new_match(implementation_type& impl,
   // org.freedesktop.DBus and call AddMatch
 }
 
+inline
 void connection_service::delete_match(implementation_type& impl,
     match& m)
 {

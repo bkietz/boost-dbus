@@ -14,12 +14,14 @@
 
 #include <boost/intrusive_ptr.hpp>
 
-void intrusive_ptr_add_ref(DBusMessage *m)
+inline void
+intrusive_ptr_add_ref(DBusMessage *m)
 {
   dbus_message_ref(m);
 }
 
-void intrusive_ptr_release(DBusMessage *m)
+inline void
+intrusive_ptr_release(DBusMessage *m)
 {
   dbus_message_unref(m);
 }

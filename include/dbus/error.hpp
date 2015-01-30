@@ -74,6 +74,7 @@ public:
   void throw_if_set() const;
 };
 
+inline
 boost::system::error_code error::error_code() const
 {
   return boost::system::error_code(
@@ -81,11 +82,13 @@ boost::system::error_code error::error_code() const
       *this);
 }
 
+inline
 boost::system::system_error error::system_error() const
 {
   return boost::system::system_error(error_code());
 }
 
+inline
 void error::throw_if_set() const
 {
   if(is_set()) throw system_error();
