@@ -55,8 +55,10 @@ public:
 
   ~connection()
   {
-    dbus_connection_close(conn);
-    dbus_connection_unref(conn);
+    if (conn != NULL) {
+      dbus_connection_close(conn);
+      dbus_connection_unref(conn);
+    }
   }
 
   operator DBusConnection *()
