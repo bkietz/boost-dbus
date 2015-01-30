@@ -10,7 +10,7 @@
 #include <boost/asio/generic/stream_protocol.hpp>
 #include <boost/asio/steady_timer.hpp>
 
-#include <dbus/chrono.hpp>
+#include "../chrono.hpp"
 
 namespace dbus {
 namespace detail {
@@ -27,13 +27,13 @@ struct watch_handler
   DBusWatch* dbus_watch;
   watch_handler(DBusWatchFlags f, DBusWatch* w):
     flags(f), dbus_watch(w) {}
-  
+
   void operator()(boost::system::error_code ec, size_t)
   {
     if(ec) return;
     dbus_watch_handle(dbus_watch, flags);
 
-    stream_protocol::socket& socket = 
+    stream_protocol::socket& socket =
       *static_cast<stream_protocol::socket *>(dbus_watch_get_data(dbus_watch));
 
     watch_toggled(dbus_watch, &socket.get_io_service());
@@ -41,7 +41,7 @@ struct watch_handler
 };
 static void watch_toggled(DBusWatch *dbus_watch, void *data)
 {
-  stream_protocol::socket& socket = 
+  stream_protocol::socket& socket =
     *static_cast<stream_protocol::socket *>(dbus_watch_get_data(dbus_watch));
 
   if(dbus_watch_get_enabled(dbus_watch)) {
@@ -49,9 +49,9 @@ static void watch_toggled(DBusWatch *dbus_watch, void *data)
     if(dbus_watch_get_flags(dbus_watch) & DBUS_WATCH_READABLE)
       socket.async_read_some(null_buffers(),
         watch_handler(DBUS_WATCH_READABLE, dbus_watch));
-    
+
     if(dbus_watch_get_flags(dbus_watch) & DBUS_WATCH_WRITABLE)
-      socket.async_write_some(null_buffers(), 
+      socket.async_write_some(null_buffers(),
         watch_handler(DBUS_WATCH_WRITABLE, dbus_watch));
 
   } else {
@@ -77,7 +77,7 @@ static dbus_bool_t add_watch(DBusWatch *dbus_watch, void *data)
   socket.assign(stream_protocol(0,0), fd);
 
   dbus_watch_set_data(dbus_watch, &socket, NULL);
-  
+
   watch_toggled(dbus_watch, &io);
   return TRUE;
 }
@@ -95,7 +95,7 @@ struct timeout_handler
   DBusTimeout* dbus_timeout;
   timeout_handler(DBusTimeout* t):
     dbus_timeout(t) {}
-  
+
   void operator()(boost::system::error_code ec)
   {
     if(ec) return;
@@ -105,7 +105,7 @@ struct timeout_handler
 
 static void timeout_toggled(DBusTimeout *dbus_timeout, void *data)
 {
-  steady_timer& timer = 
+  steady_timer& timer =
     *static_cast<steady_timer *>(dbus_timeout_get_data(dbus_timeout));
 
   if(dbus_timeout_get_enabled(dbus_timeout)) {
@@ -124,11 +124,11 @@ static dbus_bool_t add_timeout(DBusTimeout *dbus_timeout, void *data)
 
   io_service& io = *static_cast<io_service *>(data);
 
-  steady_timer& timer = 
+  steady_timer& timer =
     *new steady_timer(io);
 
   dbus_timeout_set_data(dbus_timeout, &timer, NULL);
-  
+
   timeout_toggled(dbus_timeout, &io);
   return TRUE;
 }

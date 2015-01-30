@@ -7,6 +7,7 @@
 #define DBUS_ELEMENT_HPP
 
 #include <dbus/dbus.h>
+
 #include <boost/cstdint.hpp>
 #include <string>
 

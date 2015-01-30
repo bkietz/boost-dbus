@@ -1,3 +1,4 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 // Copyright (c) Benjamin Kietzman (github.com/bkietz)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -8,6 +9,7 @@
 
 namespace dbus {
 
+inline
 message message::new_call(
     const endpoint& destination,
     const string& method_name)
@@ -19,12 +21,14 @@ message message::new_call(
       method_name.c_str());
 }
 
+inline
 message message::new_return(
     message& call)
 {
   return dbus_message_new_method_return(call);
 }
 
+inline
 message message::new_error(
     message& call,
     const string& error_name,
@@ -35,6 +39,7 @@ message message::new_error(
     error_message.c_str());
 }
 
+inline
 message message::new_signal(
     const endpoint& origin,
     const string& signal_name)

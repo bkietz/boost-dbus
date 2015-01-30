@@ -7,17 +7,21 @@
 #define DBUS_MESSAGE_HPP
 
 #include <dbus/dbus.h>
-#include <dbus/element.hpp>
-#include <dbus/endpoint.hpp>
-#include <boost/intrusive_ptr.hpp>
-#include <dbus/impl/message_iterator.hpp>
 
-void intrusive_ptr_add_ref(DBusMessage *m)
+#include "element.hpp"
+#include "endpoint.hpp"
+#include "impl/message_iterator.hpp"
+
+#include <boost/intrusive_ptr.hpp>
+
+inline void
+intrusive_ptr_add_ref(DBusMessage *m)
 {
   dbus_message_ref(m);
 }
 
-void intrusive_ptr_release(DBusMessage *m)
+inline void
+intrusive_ptr_release(DBusMessage *m)
 {
   dbus_message_unref(m);
 }
@@ -29,16 +33,16 @@ class message
   boost::intrusive_ptr<DBusMessage> message_;
 public:
 
-  /// Create a method call message 
+  /// Create a method call message
   static message new_call(
       const endpoint& destination,
       const string& method_name);
 
-  /// Create a method return message 
+  /// Create a method return message
   static message new_return(
-      message& call); 
+      message& call);
 
-  /// Create an error message 
+  /// Create an error message
   static message new_error(
       message& call,
       const string& error_name,
@@ -68,27 +72,32 @@ public:
 
   string get_path() const
   {
-    return dbus_message_get_path(message_.get());
+    return sanitize(dbus_message_get_path(message_.get()));
   }
 
   string get_interface() const
   {
-    return dbus_message_get_interface(message_.get());
+    return sanitize(dbus_message_get_interface(message_.get()));
   }
 
   string get_member() const
   {
-    return dbus_message_get_member(message_.get());
+    return sanitize(dbus_message_get_member(message_.get()));
+  }
+
+  string get_type() const
+  {
+    return sanitize(dbus_message_type_to_string(dbus_message_get_type(message_.get())));
   }
 
   string get_sender() const
   {
-    return dbus_message_get_sender(message_.get());
+    return sanitize(dbus_message_get_sender(message_.get()));
   }
 
   string get_destination() const
   {
-    return dbus_message_get_destination(message_.get());
+    return sanitize(dbus_message_get_destination(message_.get()));
   }
 
   uint32 get_serial()
@@ -142,6 +151,12 @@ public:
     return unpacker(*this).unpack(e);
   }
 
+private:
+  static std::string
+  sanitize(const char* str)
+  {
+    return (str == NULL) ? "(null)" : str;
+  }
 };
 
 template<typename Element>
@@ -156,11 +171,23 @@ message::unpacker operator>>(message m, Element& e)
   return message::unpacker(m).unpack(e);
 }
 
+inline std::ostream&
+operator<<(std::ostream& os, const message& m)
+{
+  os << "type='" << m.get_type() << "',"
+     << "sender='" << m.get_sender() << "',"
+     << "interface='" << m.get_interface() << "',"
+     << "member='" << m.get_member() << "',"
+     << "path='" << m.get_path() << "',"
+     << "destination='" << m.get_destination() << "'";
+  return os;
+}
+
 } // namespace dbus
 
-#include <dbus/impl/packer.ipp>
-#include <dbus/impl/unpacker.ipp>
-#include <dbus/impl/message.ipp>
-#include <dbus/impl/message_iterator.ipp>
+#include "impl/packer.ipp"
+#include "impl/unpacker.ipp"
+#include "impl/message.ipp"
+#include "impl/message_iterator.ipp"
 
 #endif // DBUS_MESSAGE_HPP

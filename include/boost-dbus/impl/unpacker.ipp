@@ -1,3 +1,4 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 // Copyright (c) Benjamin Kietzman (github.com/bkietz)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -7,17 +8,19 @@
 #define DBUS_UNPACKER_IPP
 
 #include <boost/utility/enable_if.hpp>
-#include <dbus/element.hpp>
+
+#include "../element.hpp"
 
 namespace dbus {
 
+inline
 message::unpacker::unpacker(message& m)
 {
   impl::message_iterator::init(m, iter_);
 }
 
 template<typename Element>
-typename boost::enable_if<is_fixed_type<Element>, message::unpacker&>::type
+inline typename boost::enable_if<is_fixed_type<Element>, message::unpacker&>::type
 operator>>(message::unpacker& u, Element& e)
 {
   u.iter_.get_basic(&e);
@@ -25,7 +28,7 @@ operator>>(message::unpacker& u, Element& e)
   return u;
 }
 
-message::unpacker&
+inline message::unpacker&
 operator>>(message::unpacker& u, string& s)
 {
   const char *c;

@@ -8,12 +8,12 @@
 
 #include <boost/asio.hpp>
 
-#include <dbus/error.hpp>
-#include <dbus/element.hpp>
-#include <dbus/message.hpp>
-#include <dbus/detail/async_send_op.hpp>
+#include "error.hpp"
+#include "element.hpp"
+#include "message.hpp"
+#include "detail/async_send_op.hpp"
 
-#include <dbus/impl/connection.ipp>
+#include "impl/connection.ipp"
 
 namespace dbus {
 
@@ -29,15 +29,13 @@ class filter;
 class match;
 
 class connection_service
-  : public io_service::service
+  : public boost::asio::detail::service_base<connection_service>
 {
 public:
-  static io_service::id id;
-
   typedef impl::connection implementation_type;
 
   explicit connection_service(io_service& io)
-    : service(io)
+    : boost::asio::detail::service_base<connection_service>(io)
   {
   }
 
@@ -119,19 +117,13 @@ public:
 
   void delete_match(implementation_type& impl,
       match& m);
-  
+
   void new_filter(implementation_type& impl,
       filter& f);
-  
+
   void delete_filter(implementation_type& impl,
       filter& f);
-
 };
-
-io_service::id connection_service::id;
-
-
-
 
 } // namespace dbus
 

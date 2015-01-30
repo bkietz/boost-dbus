@@ -8,10 +8,11 @@
 
 #include <string>
 #include <boost/asio.hpp>
-#include <dbus/chrono.hpp>
-#include <dbus/element.hpp>
-#include <dbus/message.hpp>
-#include <dbus/connection_service.hpp>
+
+#include "chrono.hpp"
+#include "element.hpp"
+#include "message.hpp"
+#include "connection_service.hpp"
 
 namespace dbus {
 
@@ -55,7 +56,7 @@ public:
    *
    * @throws boost::system::system_error When opening the connection failed.
    */
-  // TODO: change this unsigned to an enumeration 
+  // TODO: change this unsigned to an enumeration
   connection(io_service& io, const int bus)
     : basic_io_object<connection_service>(io)
   {

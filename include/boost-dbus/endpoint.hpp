@@ -7,8 +7,9 @@
 #define DBUS_ENDPOINT_HPP
 
 #include <dbus/dbus.h>
-#include <dbus/element.hpp>
-#include <dbus/message.hpp>
+
+#include "element.hpp"
+#include "message.hpp"
 
 namespace dbus {
 

@@ -1,3 +1,4 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 // Copyright (c) Benjamin Kietzman (github.com/bkietz)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -8,6 +9,7 @@
 
 namespace dbus {
 
+inline
 void connection_service::new_match(implementation_type& impl,
     match& m)
 {
@@ -18,6 +20,7 @@ void connection_service::new_match(implementation_type& impl,
   // org.freedesktop.DBus and call AddMatch
 }
 
+inline
 void connection_service::delete_match(implementation_type& impl,
     match& m)
 {

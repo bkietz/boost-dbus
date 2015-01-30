@@ -9,8 +9,8 @@
 #include <string>
 #include <boost/asio.hpp>
 
-#include <dbus/error.hpp>
-#include <dbus/connection.hpp>
+#include "error.hpp"
+#include "connection.hpp"
 
 namespace dbus {
 
@@ -46,6 +46,6 @@ public:
 
 } // namespace dbus
 
-#include <dbus/impl/match.ipp>
+#include "impl/match.ipp"
 
 #endif // DBUS_MATCH_HPP

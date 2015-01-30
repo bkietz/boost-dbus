@@ -7,10 +7,11 @@
 #define DBUS_FILTER_HPP
 
 #include <boost/asio.hpp>
-#include <dbus/detail/queue.hpp>
-#include <dbus/message.hpp>
-#include <dbus/connection.hpp>
-#include <dbus/functional.hpp>
+
+#include "detail/queue.hpp"
+#include "message.hpp"
+#include "connection.hpp"
+#include "functional.hpp"
 
 namespace dbus {
 
@@ -27,10 +28,10 @@ class filter
 public:
 
   bool offer(message& m)
-  { 
+  {
     bool filtered = predicate_(m);
     if(filtered) queue_.push(m);
-    return filtered; 
+    return filtered;
   }
 
   template<typename MessagePredicate>
@@ -47,7 +48,7 @@ public:
   {
     connection_.delete_filter(*this);
   }
- 
+
   template<typename MessageHandler>
   inline BOOST_ASIO_INITFN_RESULT_TYPE(MessageHandler,
       void(boost::system::error_code, message))
@@ -66,5 +67,5 @@ public:
 } // namespace dbus
 
 
-#include <dbus/impl/filter.ipp>
+#include "impl/filter.ipp"
 #endif // DBUS_FILTER_HPP

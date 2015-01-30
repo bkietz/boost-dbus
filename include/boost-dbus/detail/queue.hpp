@@ -10,7 +10,7 @@
 #include <boost/asio.hpp>
 #include <boost/asio/detail/mutex.hpp>
 
-#include <dbus/functional.hpp>
+#include "../functional.hpp"
 
 
 namespace dbus {
@@ -47,8 +47,8 @@ private:
   public:
     void operator()() { handler_(error_, message_); }
     closure(
-	BOOST_ASIO_MOVE_ARG(handler_type) h, 
-	Message m,
+        BOOST_ASIO_MOVE_ARG(handler_type) h,
+        Message m,
         boost::system::error_code e = boost::system::error_code())
       : handler_(h),
         message_(m),
@@ -70,8 +70,7 @@ public:
 
       lock.unlock();
 
-      io.post(
-        closure(BOOST_ASIO_MOVE_CAST(handler_type)(h), m));
+      io.post(closure(BOOST_ASIO_MOVE_CAST(handler_type)(h), m));
     }
   }
 
@@ -82,7 +81,7 @@ public:
   {
     typedef ::boost::asio::detail::async_result_init<
       MessageHandler, void(boost::system::error_code, message_type)> init_type;
-   
+
     mutex_type::scoped_lock lock(mutex);
     if(messages.empty())
     {
@@ -102,8 +101,7 @@ public:
 
       init_type init(BOOST_ASIO_MOVE_CAST(MessageHandler)(h));
 
-      io.post(closure(
-        BOOST_ASIO_MOVE_CAST(handler_type)(init.handler), m));
+      io.post(closure(init.handler, m));
 
       return init.result.get();
     }
