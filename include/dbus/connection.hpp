@@ -8,10 +8,11 @@
 
 #include <string>
 #include <boost/asio.hpp>
-#include <dbus/chrono.hpp>
-#include <dbus/element.hpp>
-#include <dbus/message.hpp>
-#include <dbus/connection_service.hpp>
+
+#include "chrono.hpp"
+#include "element.hpp"
+#include "message.hpp"
+#include "connection_service.hpp"
 
 namespace dbus {
 

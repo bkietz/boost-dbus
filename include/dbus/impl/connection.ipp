@@ -1,3 +1,4 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 // Copyright (c) Benjamin Kietzman (github.com/bkietz)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -7,7 +8,8 @@
 #define DBUS_CONNECTION_IPP
 
 #include <dbus/dbus.h>
-#include <dbus/detail/watch_timeout.hpp>
+
+#include "../detail/watch_timeout.hpp"
 
 #include <boost/atomic.hpp>
 

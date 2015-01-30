@@ -10,7 +10,7 @@
 #include <boost/asio.hpp>
 #include <boost/asio/detail/mutex.hpp>
 
-#include <dbus/functional.hpp>
+#include "../functional.hpp"
 
 
 namespace dbus {

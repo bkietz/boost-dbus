@@ -8,12 +8,12 @@
 
 #include <boost/asio.hpp>
 
-#include <dbus/error.hpp>
-#include <dbus/element.hpp>
-#include <dbus/message.hpp>
-#include <dbus/detail/async_send_op.hpp>
+#include "error.hpp"
+#include "element.hpp"
+#include "message.hpp"
+#include "detail/async_send_op.hpp"
 
-#include <dbus/impl/connection.ipp>
+#include "impl/connection.ipp"
 
 namespace dbus {
 

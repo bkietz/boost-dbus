@@ -7,8 +7,10 @@
 #define DBUS_ERROR_HPP
 
 #include <dbus/dbus.h>
-#include <dbus/element.hpp>
-#include <dbus/message.hpp>
+
+#include "element.hpp"
+#include "message.hpp"
+
 #include <boost/system/error_code.hpp>
 #include <boost/system/system_error.hpp>
 

@@ -7,10 +7,12 @@
 #define DBUS_MESSAGE_HPP
 
 #include <dbus/dbus.h>
-#include <dbus/element.hpp>
-#include <dbus/endpoint.hpp>
+
+#include "element.hpp"
+#include "endpoint.hpp"
+#include "impl/message_iterator.hpp"
+
 #include <boost/intrusive_ptr.hpp>
-#include <dbus/impl/message_iterator.hpp>
 
 void intrusive_ptr_add_ref(DBusMessage *m)
 {
@@ -158,9 +160,9 @@ message::unpacker operator>>(message m, Element& e)
 
 } // namespace dbus
 
-#include <dbus/impl/packer.ipp>
-#include <dbus/impl/unpacker.ipp>
-#include <dbus/impl/message.ipp>
-#include <dbus/impl/message_iterator.ipp>
+#include "impl/packer.ipp"
+#include "impl/unpacker.ipp"
+#include "impl/message.ipp"
+#include "impl/message_iterator.ipp"
 
 #endif // DBUS_MESSAGE_HPP

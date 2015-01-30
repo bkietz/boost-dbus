@@ -10,7 +10,7 @@
 #include <boost/asio/generic/stream_protocol.hpp>
 #include <boost/asio/steady_timer.hpp>
 
-#include <dbus/chrono.hpp>
+#include "../chrono.hpp"
 
 namespace dbus {
 namespace detail {

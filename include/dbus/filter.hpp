@@ -7,10 +7,11 @@
 #define DBUS_FILTER_HPP
 
 #include <boost/asio.hpp>
-#include <dbus/detail/queue.hpp>
-#include <dbus/message.hpp>
-#include <dbus/connection.hpp>
-#include <dbus/functional.hpp>
+
+#include "detail/queue.hpp"
+#include "message.hpp"
+#include "connection.hpp"
+#include "functional.hpp"
 
 namespace dbus {
 
@@ -66,5 +67,5 @@ public:
 } // namespace dbus
 
 
-#include <dbus/impl/filter.ipp>
+#include "impl/filter.ipp"
 #endif // DBUS_FILTER_HPP

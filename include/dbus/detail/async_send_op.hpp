@@ -9,10 +9,10 @@
 #include <boost/scoped_ptr.hpp>
 
 #include <dbus/dbus.h>
-#include <dbus/message.hpp>
-#include <dbus/error.hpp>
+#include "../message.hpp"
+#include "../error.hpp"
 
-#include <dbus/impl/connection.ipp>
+#include "../impl/connection.ipp"
 
 namespace dbus {
 namespace detail {

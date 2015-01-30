@@ -1,3 +1,4 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 // Copyright (c) Benjamin Kietzman (github.com/bkietz)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -6,7 +7,7 @@
 #ifndef DBUS_IMPL_MESSAGE_ITERATOR_IPP
 #define DBUS_IMPL_MESSAGE_ITERATOR_IPP
 
-#include <dbus/impl/message_iterator.hpp>
+#include "message_iterator.hpp"
 
 namespace dbus {
 namespace impl {
