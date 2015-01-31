@@ -53,16 +53,18 @@ public:
 
   ~connection()
   {
-    dbus_connection_close(conn);
-    dbus_connection_unref(conn);
+    if (conn != NULL) {
+      dbus_connection_close(conn);
+      dbus_connection_unref(conn);
+    }
   }
 
-  operator DBusConnection *() 
-  { 
+  operator DBusConnection *()
+  {
     return conn;
   }
-  operator const DBusConnection *() const 
-  { 
+  operator const DBusConnection *() const
+  {
     return conn;
   }
 
@@ -70,7 +72,7 @@ public:
       int timeout_in_milliseconds = -1)
   {
     error e;
-    message reply(dbus_connection_send_with_reply_and_block(conn, 
+    message reply(dbus_connection_send_with_reply_and_block(conn,
         m, timeout_in_milliseconds, e));
 
     e.throw_if_set();

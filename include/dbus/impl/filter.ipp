@@ -37,7 +37,7 @@ void connection_service::new_filter(implementation_type& impl,
   dbus_connection_add_filter(impl,
       &impl::filter_callback, &f, NULL);
 }
-  
+
 void connection_service::delete_filter(implementation_type& impl,
     filter& f)
 {
