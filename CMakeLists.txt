@@ -48,3 +48,4 @@ endfunction(cxx_test)
 
 cxx_test(avahi)
 cxx_test(message)
+cxx_test(error)
